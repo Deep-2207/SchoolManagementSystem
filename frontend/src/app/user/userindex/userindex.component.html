@@ -1,0 +1,213 @@
+<div class="modern-container fade-in">
+  
+  <!-- School Classroom Academy Banner -->
+  <div class="school-blackboard-banner mb-4 slide-up">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <span class="banner-badge">
+          <i class="pi pi-book"></i>
+          Classroom Learning & Assessment Hall
+        </span>
+        <h1 class="banner-title">Enrolled Courses & Aptitude Tests</h1>
+        <p class="banner-subtitle">Enter proctored assessments, view registered course curricula, and inspect solution keys</p>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-card bg-white-alpha-10 p-3 border-round-xl border-1 border-white-alpha-20">
+          <span class="text-xs uppercase tracking-wider text-green-300 font-bold block mb-1">Enrolled Modules</span>
+          <span class="stat-number font-mono text-3xl font-extrabold text-white">{{ myCourses.length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enrolled Courses Section (Top Priority for Students) -->
+  <div class="modern-section" *ngIf="myCourses.length > 0">
+    <div class="section-title-row">
+      <div>
+        <h2 class="section-label">My Registered Courses</h2>
+        <span class="section-subtext">Courses you are currently participating in</span>
+      </div>
+    </div>
+
+    <div class="courses-stack">
+      <div *ngFor="let course of myCourses" class="enrolled-module-card modern-card interactive-card">
+        <div class="module-main-row">
+          <div class="module-primary-info">
+            <div class="module-title-badge">
+              <span class="dept-tag font-mono">{{ departmentLookup.get(course.departmentId) || 'Academic' }}</span>
+              <span class="status-badge status-active">Enrolled</span>
+            </div>
+            <h3 class="module-name">{{ course.name }}</h3>
+            <p class="module-instructor">Instructor: {{ course.teacher?.name || 'Faculty Member' }}</p>
+          </div>
+
+          <div class="module-schedule-info">
+            <div class="schedule-pill">
+              <i class="pi pi-calendar"></i>
+              <span>{{ course.day }}</span>
+            </div>
+            <div class="schedule-pill">
+              <i class="pi pi-clock"></i>
+              <span>{{ course.time }}</span>
+            </div>
+          </div>
+
+          <div class="module-action-buttons">
+            <button class="modern-btn modern-btn-primary" (click)="showExams(course)">
+              <i class="pi pi-file-edit"></i>
+              <span>{{ expandedCourseId === course.id ? 'Hide Exams' : 'View Exams' }}</span>
+            </button>
+            <button class="modern-btn modern-btn-secondary" (click)="viewGrades(course)">
+              <i class="pi pi-chart-bar"></i>
+              <span>Grades</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Expanded Exams Drawer -->
+        <div *ngIf="expandedCourseId === course.id" class="exams-drawer slide-up">
+          <div class="drawer-header">
+            <h4>Examinations for {{ course.name }}</h4>
+            <span class="drawer-badge font-mono">{{ expandedExams.length }} Scheduled</span>
+          </div>
+
+          <div *ngIf="expandedExams.length > 0; else noExams" class="exams-items-list">
+            <div *ngFor="let exam of expandedExams" class="exam-row-item">
+              <div class="exam-row-meta">
+                <div class="exam-row-title-line">
+                  <h5 class="exam-name">{{ exam.name }}</h5>
+                  <span class="status-badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" *ngIf="hasLiveClass(exam)">
+                    <span class="live-dot" style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 4px;"></span>
+                    Live Class
+                  </span>
+                  <span class="status-badge" [ngClass]="getExamStatusColor(exam)">
+                    {{ getExamStatusText(exam) }}
+                  </span>
+                </div>
+                <div class="exam-dates-line">
+                  <span>Start: {{ exam.examDateStart | date:'MMM dd, HH:mm' }}</span>
+                  <span class="dot-separator">·</span>
+                  <span>End: {{ exam.examDateEnd | date:'MMM dd, HH:mm' }}</span>
+                  <span class="dot-separator" *ngIf="exam.durationMinutes">·</span>
+                  <span *ngIf="exam.durationMinutes">{{ exam.durationMinutes }} Minutes</span>
+                </div>
+              </div>
+
+              <div class="exam-row-actions">
+                <button 
+                  *ngIf="hasLiveClass(exam)"
+                  class="modern-btn"
+                  style="background: #eff6ff; color: #1d4ed8; border: 1.5px solid #93c5fd;"
+                  (click)="watchLiveClass(exam)">
+                  <i class="pi pi-video"></i>
+                  <span>Watch Live Class</span>
+                </button>
+                <button 
+                  *ngIf="!examSubmissions[exam.id]"
+                  class="modern-btn" 
+                  [ngClass]="isExamActive(exam) ? 'modern-btn-success' : 'modern-btn-disabled'"
+                  [disabled]="!isExamActive(exam)"
+                  (click)="takeExam(exam)">
+                  <i class="pi pi-play"></i>
+                  <span>{{ isExamActive(exam) ? 'Enter Live Exam' : 'Exam Closed' }}</span>
+                </button>
+                <button 
+                  *ngIf="examSubmissions[exam.id]"
+                  class="modern-btn modern-btn-primary" 
+                  (click)="viewExamSolutions(exam)">
+                  <i class="pi pi-file-edit"></i>
+                  <span>View Solution Key</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noExams>
+            <div class="no-exams-box">
+              <i class="pi pi-info-circle"></i>
+              <p>No exams currently published for this course.</p>
+            </div>
+          </ng-template>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Catalog & Enrollment (Available Courses) -->
+  <div class="modern-section">
+    <div class="section-title-row">
+      <div>
+        <h2 class="section-label">Available Courses Catalog</h2>
+        <span class="section-subtext">Explore modules across university departments</span>
+      </div>
+    </div>
+
+    <!-- Minimal Filter Strip -->
+    <div class="filter-strip modern-card">
+      <div class="filter-controls-group">
+        <span class="filter-label">Filter Department:</span>
+        <p-dropdown 
+          [options]="departments" 
+          [(ngModel)]="selectedDepartmentId"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="All Departments"
+          (onChange)="onDepartmentFilter()"
+          class="department-dropdown">
+        </p-dropdown>
+        <button 
+          class="modern-btn modern-btn-secondary" 
+          (click)="clearFilter()"
+          [disabled]="selectedDepartmentId === null">
+          <i class="pi pi-times"></i>
+          Clear
+        </button>
+      </div>
+
+      <div class="filter-count font-mono">
+        {{ filteredData.length }} of {{ data.length }} Courses Available
+      </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="catalog-grid">
+      <div *ngFor="let course of filteredData" class="catalog-card modern-card interactive-card">
+        <div class="catalog-card-header">
+          <span class="dept-tag font-mono">{{ departmentLookup.get(course.departmentId) || 'General' }}</span>
+          <span class="status-badge" [ngClass]="course.isSubscripe ? 'status-active' : 'modern-badge-info'">
+            {{ course.isSubscripe ? 'Registered' : 'Open' }}
+          </span>
+        </div>
+
+        <h3 class="catalog-card-title">{{ course.name }}</h3>
+        <p class="catalog-card-instructor">Instructor: {{ course.teacher?.name || 'Faculty Member' }}</p>
+
+        <div class="catalog-card-schedule">
+          <span class="schedule-text"><i class="pi pi-calendar"></i> {{ course.day }}</span>
+          <span class="schedule-text"><i class="pi pi-clock"></i> {{ course.time }}</span>
+        </div>
+
+        <div class="catalog-card-actions">
+          <button 
+            class="modern-btn modern-btn-primary" 
+            (click)="takeCourse(course)" 
+            [disabled]="course.isSubscripe">
+            <i class="pi pi-plus"></i>
+            {{ course.isSubscripe ? 'Enrolled' : 'Enroll Course' }}
+          </button>
+          <button 
+            class="modern-btn modern-btn-danger" 
+            (click)="dropCourse(course)" 
+            *ngIf="course.isSubscripe">
+            <i class="pi pi-minus"></i>
+            Drop
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

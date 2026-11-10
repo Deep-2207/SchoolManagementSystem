@@ -1,0 +1,27 @@
+[
+    {
+        "label": "Faculty Hall",
+        "items": [
+            {
+                "label": "Teacher Dashboard",
+                "icon": "pi pi-fw pi-home",
+                "routerLink": "/"
+            }
+        ]
+    },
+    {
+        "label": "Course & Assessment Hub",
+        "items": [
+            {
+                "label": "Courses & Question Banks",
+                "icon": "pi pi-fw pi-book",
+                "routerLink": "/course/index"
+            },
+            {
+                "label": "Enrolled Candidates",
+                "icon": "pi pi-fw pi-users",
+                "routerLink": "/student/index"
+            }
+        ]
+    }
+]

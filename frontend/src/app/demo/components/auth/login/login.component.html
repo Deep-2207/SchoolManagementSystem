@@ -1,0 +1,54 @@
+<div class="flex align-items-center justify-content-center min-h-screen min-w-screen p-4 fade-in" style="background: linear-gradient(135deg, #0d2f24 0%, #071913 100%);">
+    <div class="w-full max-w-28rem">
+        
+        <!-- School Academy Brand Header -->
+        <div class="text-center mb-4">
+            <div class="w-4rem h-4rem mx-auto mb-3 text-white flex align-items-center justify-content-center font-bold text-2xl border-round-2xl shadow-4" style="background: rgba(255, 255, 255, 0.12); border: 2px solid rgba(255, 255, 255, 0.25);">
+                🎓
+            </div>
+            <h1 class="text-white text-2xl font-bold m-0 tracking-tight">St. Jude Academy</h1>
+            <p class="text-green-200 text-sm mt-1 mb-0">Scholastic Aptitude & Examination Portal</p>
+        </div>
+
+        <!-- Clean Elevated Login Card -->
+        <div class="modern-card p-5 scale-in" style="background: #ffffff; border-radius: 1.25rem; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);">
+            <div>
+                <label for="email1" class="block text-800 text-sm font-semibold mb-2">Academic Email</label>
+                <input id="email1" type="text" placeholder="name@school.edu" pInputText class="w-full mb-3 p-3 text-sm border-round-md" [(ngModel)]="email">
+
+                <label for="password1" class="block text-800 text-sm font-semibold mb-2">Password</label>
+                <p-password id="password1" [(ngModel)]="password" placeholder="Enter password" [toggleMask]="true" styleClass="w-full mb-3" inputStyleClass="w-full p-3 text-sm border-round-md" [feedback]="false"></p-password>
+
+                <button pButton pRipple label="Sign In to Classroom" class="w-full p-3 text-sm font-bold border-round-md modern-btn-primary mb-3" (click)="login()"></button>
+
+                <!-- Quick Role Switcher for Seamless Testing -->
+                <div class="pt-3 border-top-1 surface-border">
+                    <span class="text-xs text-500 font-bold block mb-2 text-center uppercase tracking-wider">Quick Fill Roles for Demo:</span>
+                    <div class="grid gap-1">
+                        <div class="col-4 p-1">
+                            <button type="button" class="modern-btn modern-btn-secondary w-full p-2 text-xs font-semibold text-center" (click)="quickFill('admin')">
+                                👑 Admin
+                            </button>
+                        </div>
+                        <div class="col-4 p-1">
+                            <button type="button" class="modern-btn modern-btn-secondary w-full p-2 text-xs font-semibold text-center" (click)="quickFill('teacher')">
+                                👨‍🏫 Teacher
+                            </button>
+                        </div>
+                        <div class="col-4 p-1">
+                            <button type="button" class="modern-btn modern-btn-secondary w-full p-2 text-xs font-semibold text-center" (click)="quickFill('student')">
+                                🧑‍🎓 Student
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <span class="text-green-300 text-xs font-semibold">2026 Academic Assessment Hall • Docker SQL Server Active</span>
+        </div>
+
+    </div>
+</div>

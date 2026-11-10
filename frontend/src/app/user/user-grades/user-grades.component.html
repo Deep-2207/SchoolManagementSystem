@@ -1,0 +1,381 @@
+<div class="modern-container fade-in">
+  <p-toast></p-toast>
+
+  <!-- ========================================================================= -->
+  <!-- 1. DETAILED SOLUTION REVIEW & PERFORMANCE ANALYTICS VIEW                 -->
+  <!-- ========================================================================= -->
+  <div *ngIf="activeReview" class="slide-up">
+    
+    <!-- Top Action Row -->
+    <div class="flex justify-content-between align-items-center mb-3">
+      <button class="modern-btn modern-btn-secondary" (click)="closeSolutionReview()">
+        <i class="pi pi-arrow-left mr-2"></i>
+        Back to Gradebook
+      </button>
+      <span class="text-sm font-bold text-500 font-mono">
+        Assessment ID: #{{ activeReview.examId }}
+      </span>
+    </div>
+
+    <!-- Blackboard Scholarly Banner -->
+    <div class="school-blackboard-banner mb-4">
+      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+        <div>
+          <span class="banner-badge">
+            <i class="pi pi-check-circle"></i>
+            Official Solution Key & Performance Review
+          </span>
+          <h1 class="banner-title">{{ activeReview.examName }}</h1>
+          <p class="banner-subtitle">Course: {{ activeReview.courseName }} | Total Assessment Time: {{ activeReview.totalTimeSpentSeconds }}s</p>
+        </div>
+
+        <!-- Scholastic Net Score Pill -->
+        <div class="flex align-items-center gap-3">
+          <div class="text-center p-3 bg-white-alpha-10 border-round-xl border-1 border-white-alpha-20">
+            <span class="block text-xs uppercase tracking-wider text-green-300 font-bold mb-1">Net Scaled Score</span>
+            <span class="text-3xl font-extrabold text-white font-mono">{{ activeReview.netScore }}</span>
+            <span class="text-xs text-300 block">/ {{ activeReview.totalQuestions * 4 }} pts</span>
+          </div>
+
+          <div class="text-center p-3 border-round-xl border-1" 
+               [ngClass]="activeReview.isPassed ? 'bg-green-900 border-green-500' : 'bg-red-900 border-red-500'">
+            <span class="block text-xs uppercase tracking-wider text-200 font-bold mb-1">Outcome</span>
+            <span class="text-2xl font-extrabold text-white">
+              {{ activeReview.isPassed ? 'PASSED 🎓' : 'REVIEW ⚠️' }}
+            </span>
+            <span class="text-xs text-200 block">{{ activeReview.score }}% Cutoff</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Speed vs Accuracy Analytics Dashboard -->
+    <div class="grid mb-4">
+      
+      <!-- Overall Accuracy Card -->
+      <div class="col-12 md:col-3">
+        <div class="modern-card p-3 h-full">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Accuracy Rate</span>
+          <div class="text-3xl font-extrabold text-primary font-mono mb-1">
+            {{ activeReview.speedAccuracy?.overallAccuracyPercent || 0 }}%
+          </div>
+          <div class="flex gap-2 text-xs font-semibold">
+            <span class="text-green-600 font-bold">✓ {{ activeReview.correctAnswers }} Correct</span>
+            <span class="text-red-600 font-bold">✗ {{ activeReview.wrongAnswers }} Wrong</span>
+            <span class="text-500">○ {{ activeReview.skippedAnswers }} Skipped</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Speed: Correct vs Incorrect Time -->
+      <div class="col-12 md:col-3">
+        <div class="modern-card p-3 h-full">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Avg Time on Correct</span>
+          <div class="text-3xl font-extrabold text-green-600 font-mono mb-1">
+            {{ activeReview.speedAccuracy?.avgTimePerCorrectSeconds || 0 }}s
+          </div>
+          <span class="text-xs text-500 block">Fast problem solving speed</span>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-3">
+        <div class="modern-card p-3 h-full">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Avg Time on Wrong</span>
+          <div class="text-3xl font-extrabold text-red-600 font-mono mb-1">
+            {{ activeReview.speedAccuracy?.avgTimePerWrongSeconds || 0 }}s
+          </div>
+          <span class="text-xs text-500 block">Time spent before errors</span>
+        </div>
+      </div>
+
+      <!-- Marking Breakdown -->
+      <div class="col-12 md:col-3">
+        <div class="modern-card p-3 h-full">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Pacing Recommendation</span>
+          <div class="text-base font-bold text-800 mb-1">
+            {{ activeReview.speedAccuracy?.recommendedPacing || 'Standard pacing' }}
+          </div>
+          <span class="text-xs text-500 font-mono">
+            +{{ activeReview.positiveScore }} pts earned | -{{ activeReview.negativePenalty }} penalty
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sectional Accuracy Breakdown -->
+    <div class="modern-card p-4 mb-4" *ngIf="activeReview.sectionAnalytics?.length > 0">
+      <h4 class="font-bold text-base text-800 mb-3 flex align-items-center gap-2">
+        <i class="pi pi-chart-bar text-primary"></i>
+        Aptitude Section Breakdown
+      </h4>
+      <div class="grid">
+        <div *ngFor="let sec of activeReview.sectionAnalytics" class="col-12 md:col-4">
+          <div class="surface-ground p-3 border-round-lg border-1 surface-border">
+            <div class="flex justify-content-between align-items-center mb-2">
+              <span class="font-bold text-sm text-900">{{ sec.sectionName }}</span>
+              <span class="font-extrabold text-sm text-primary font-mono">{{ sec.accuracyPercent }}% Acc</span>
+            </div>
+            <div class="flex justify-content-between text-xs text-500 font-medium">
+              <span>{{ sec.correctCount }} / {{ sec.totalQuestions }} Correct</span>
+              <span>Net Score: {{ sec.score }} pts</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-200 border-round-sm h-1rem mt-2 overflow-hidden surface-300">
+              <div class="bg-primary h-full border-round-sm" [style.width]="sec.accuracyPercent + '%'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Filter Ribbon -->
+    <div class="flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <div class="flex gap-2">
+        <button 
+          class="modern-btn"
+          [ngClass]="reviewFilter === 'all' ? 'modern-btn-primary' : 'modern-btn-secondary'"
+          (click)="reviewFilter = 'all'">
+          All Questions ({{ activeReview.questions?.length }})
+        </button>
+        <button 
+          class="modern-btn"
+          [ngClass]="reviewFilter === 'correct' ? 'modern-btn-primary' : 'modern-btn-secondary'"
+          (click)="reviewFilter = 'correct'">
+          ✓ Correct ({{ activeReview.correctAnswers }})
+        </button>
+        <button 
+          class="modern-btn"
+          [ngClass]="reviewFilter === 'wrong' ? 'modern-btn-primary' : 'modern-btn-secondary'"
+          (click)="reviewFilter = 'wrong'">
+          ✗ Incorrect ({{ activeReview.wrongAnswers }})
+        </button>
+        <button 
+          class="modern-btn"
+          [ngClass]="reviewFilter === 'skipped' ? 'modern-btn-primary' : 'modern-btn-secondary'"
+          (click)="reviewFilter = 'skipped'">
+          ○ Skipped ({{ activeReview.skippedAnswers }})
+        </button>
+      </div>
+
+      <span class="text-xs text-500 font-semibold">
+        Showing {{ getFilteredQuestions().length }} problem(s)
+      </span>
+    </div>
+
+    <!-- Question-by-Question Detailed Solution Cards -->
+    <div class="flex flex-column gap-3 mb-5">
+      <div *ngFor="let q of getFilteredQuestions(); let i = index" 
+           class="modern-card p-4 interactive-card"
+           [style.border-left]="q.isCorrect ? '5px solid #10b981' : (q.isSkipped ? '5px solid #94a3b8' : '5px solid #ef4444')">
+        
+        <!-- Header Row -->
+        <div class="flex justify-content-between align-items-center mb-3 pb-2 border-bottom-1 surface-border flex-wrap gap-2">
+          <div class="flex align-items-center gap-2">
+            <span class="font-bold text-base text-900">Question #{{ i + 1 }}</span>
+            <span class="section-pill {{ getSectionBadgeClass(q.section) }}">{{ getSectionName(q.section) }}</span>
+            <span class="diff-badge {{ getDifficultyClass(q.difficulty) }}">{{ getDifficultyLabel(q.difficulty) }}</span>
+          </div>
+
+          <div class="flex align-items-center gap-3">
+            <span class="text-xs text-500 font-mono font-semibold">
+              <i class="pi pi-clock mr-1"></i> {{ q.timeSpentSeconds }}s spent
+            </span>
+            <span class="status-pill" 
+                  [ngClass]="q.isCorrect ? 'status-pill-answered' : (q.isSkipped ? 'status-pill-unvisited' : 'status-pill-unanswered')">
+              {{ q.isCorrect ? '✓ Correct (+4.0)' : (q.isSkipped ? '○ Skipped (0.0)' : '✗ Incorrect (-1.0)') }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="font-semibold text-lg text-900 mb-3 line-height-3">
+          {{ q.question }}
+        </div>
+
+        <!-- Options Grid -->
+        <div class="grid mb-3">
+          <div *ngFor="let opt of ['A', 'B', 'C', 'D']; let idx = index" class="col-12 md:col-6">
+            <div class="p-2 border-round-lg border-1 flex align-items-center justify-content-between"
+                 [ngClass]="{
+                   'bg-green-50 border-green-500 text-green-900 font-bold': q.correctChoice === (idx + 1),
+                   'bg-red-50 border-red-500 text-red-900 font-bold': q.userChoice === (idx + 1) && !q.isCorrect,
+                   'surface-ground border-surface-200 text-700': q.correctChoice !== (idx + 1) && q.userChoice !== (idx + 1)
+                 }">
+              <div class="flex align-items-center gap-2">
+                <span class="font-bold" style="width: 20px;">{{ opt }}.</span>
+                <span>{{ q['choice' + opt] }}</span>
+              </div>
+              <div class="flex align-items-center gap-1 text-xs">
+                <span *ngIf="q.userChoice === (idx + 1)" class="badge p-1 bg-primary text-white border-round text-xs font-bold">Your Choice</span>
+                <span *ngIf="q.correctChoice === (idx + 1)" class="badge p-1 bg-green-600 text-white border-round text-xs font-bold">Key ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step-by-Step Solution Card (Chalkboard / Faculty explanation) -->
+        <div class="solution-explanation-card">
+          <div class="explanation-header">
+            <i class="pi pi-lightbulb"></i>
+            Step-by-Step Mathematical & Conceptual Solution
+          </div>
+          <div class="explanation-body">
+            {{ q.explanation }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. STUDENT GRADEBOOK & COMPLETED EXAMS OVERVIEW                           -->
+  <!-- ========================================================================= -->
+  <div *ngIf="!activeReview">
+    <!-- School Classroom Header Banner -->
+    <div class="school-blackboard-banner mb-4 slide-up">
+      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+        <div>
+          <span class="banner-badge">
+            <i class="pi pi-chart-line"></i>
+            Academy Gradebook & Solution Keys
+          </span>
+          <h1 class="banner-title">Performance Records & Solutions</h1>
+          <p class="banner-subtitle">Inspect test results, review step-by-step mathematical derivations, and analyze sectional pacing</p>
+        </div>
+
+        <div class="header-stats" *ngIf="examResults.length > 0">
+          <div class="stat-card bg-white-alpha-10 p-3 border-round-xl border-1 border-white-alpha-20">
+            <span class="text-xs uppercase tracking-wider text-green-300 font-bold block mb-1">Course Cumulative Avg</span>
+            <span class="stat-number font-mono text-3xl font-extrabold text-white">
+              {{ courseAverage.toFixed(1) }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Selector Strip -->
+    <div class="modern-section mb-4">
+      <div class="course-picker-card modern-card p-3 flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="flex align-items-center gap-3">
+          <label class="font-bold text-sm text-800">Academic Course:</label>
+          <p-dropdown 
+            [options]="courses" 
+            [(ngModel)]="selectedCourse"
+            optionLabel="name"
+            placeholder="Select course..."
+            (onChange)="onCourseSelect()"
+            styleClass="w-20rem">
+          </p-dropdown>
+        </div>
+
+        <div class="text-sm font-semibold text-600" *ngIf="selectedCourse">
+          <span>{{ selectedCourse.name }}</span>
+          <span class="mx-2">·</span>
+          <span>{{ examResults.length }} Recorded Assessment(s)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric Cards for Selected Course -->
+    <div *ngIf="selectedCourse && examResults.length > 0" class="grid mb-4 slide-up">
+      <div class="col-12 md:col-4">
+        <div class="modern-card p-3 text-center">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Course Average Score</span>
+          <div class="text-3xl font-extrabold font-mono mb-1" [ngClass]="getGradeColor(courseAverage)">
+            {{ courseAverage.toFixed(1) }}%
+          </div>
+          <span class="text-xs text-500">{{ examResults.length }} graded test(s)</span>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <div class="modern-card p-3 text-center">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Passed Assessments</span>
+          <div class="text-3xl font-extrabold font-mono text-green-600 mb-1">
+            {{ getPassedCount() }}
+          </div>
+          <span class="text-xs text-500">Met passing score cutoff</span>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <div class="modern-card p-3 text-center">
+          <span class="text-xs font-bold text-500 uppercase block mb-1">Review Needed</span>
+          <div class="text-3xl font-extrabold font-mono text-red-600 mb-1">
+            {{ getFailedCount() }}
+          </div>
+          <span class="text-xs text-500">Below passing cutoff criteria</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Submissions Table -->
+    <div *ngIf="selectedCourse && examResults.length > 0" class="modern-card p-4">
+      <div class="flex justify-content-between align-items-center mb-3 pb-2 border-bottom-1 surface-border">
+        <h4 class="m-0 font-bold text-800">Recorded Examination Submissions</h4>
+        <span class="text-xs text-500 font-bold font-mono">{{ examResults.length }} Total</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left" style="border-collapse: collapse;">
+          <thead>
+            <tr class="border-bottom-1 surface-border text-xs text-500 uppercase">
+              <th class="py-2">Assessment Name</th>
+              <th class="py-2">Submitted Date</th>
+              <th class="py-2">Accuracy</th>
+              <th class="py-2">Score</th>
+              <th class="py-2">Result</th>
+              <th class="py-2 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let result of examResults" class="border-bottom-1 surface-border hover:surface-50 transition-colors">
+              <td class="py-3">
+                <span class="font-bold text-900 block">{{ result.examName }}</span>
+              </td>
+              <td class="py-3 text-sm text-600">
+                {{ result.submittedAt | date:'medium' }}
+              </td>
+              <td class="py-3 text-sm font-semibold">
+                {{ result.correctAnswers }} / {{ result.totalQuestions }} correct
+              </td>
+              <td class="py-3 font-mono font-bold" [ngClass]="getGradeColor(result.score)">
+                {{ result.score }}%
+              </td>
+              <td class="py-3">
+                <span class="status-pill" [ngClass]="result.isPassed ? 'status-pill-answered' : 'status-pill-unanswered'">
+                  {{ result.isPassed ? 'PASSED' : 'FAILED' }}
+                </span>
+              </td>
+              <td class="py-3 text-right">
+                <button 
+                  class="modern-btn modern-btn-primary p-2 text-xs"
+                  (click)="openSolutionReview(result.examId)"
+                  title="View step-by-step mathematical solution and speed analytics">
+                  <i class="pi pi-file-edit mr-1"></i>
+                  Solution Review
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="selectedCourse && examResults.length === 0" class="modern-card empty-state text-center py-6">
+      <i class="pi pi-book text-5xl text-400 mb-3"></i>
+      <h3 class="font-bold text-xl mb-2">No Exam Submissions Yet</h3>
+      <p class="text-500 mb-4">Complete an examination to view your report card, solution keys, and analytics.</p>
+      <button class="modern-btn modern-btn-primary" (click)="goToExams()">
+        <i class="pi pi-pencil mr-2"></i>
+        Go to Examinations
+      </button>
+    </div>
+  </div>
+
+</div>

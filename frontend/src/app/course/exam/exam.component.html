@@ -1,0 +1,185 @@
+<div class="modern-container fade-in">
+  <p-toast></p-toast>
+
+  <!-- School Classroom Academy Header -->
+  <div class="school-blackboard-banner mb-4 slide-up">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <span class="banner-badge">
+          <i class="pi pi-pencil"></i>
+          Curriculum & Assessment Hall
+        </span>
+        <h1 class="banner-title">Examination & Aptitude Test Manager</h1>
+        <p class="banner-subtitle">Configure tests, live proctoring video feeds, negative marking, and question repositories</p>
+      </div>
+      <div>
+        <button class="modern-btn modern-btn-primary" (click)="openNew()" style="background: #ffffff; color: #0d2f24; border: none; font-weight: 700;">
+          <i class="pi pi-plus mr-2"></i>
+          New Examination
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col-12">
+      <div class="modern-card p-4">
+        <p-table #dt [value]="exams" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+          [globalFilterFields]="['name','examDateStart','examDateEnd','passPoint']" [paginator]="true"
+          [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} tests"
+          [(selection)]="selectedExams" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3 pb-3">
+              <h4 class="m-0 font-bold text-800">Assigned Course Examinations</h4>
+              <span class="block p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search examinations..." class="w-full sm:w-auto" />
+              </span>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="name">Assessment Name <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="durationMinutes">Duration <p-sortIcon field="durationMinutes"></p-sortIcon></th>
+              <th pSortableColumn="passPoint">Pass Cutoff <p-sortIcon field="passPoint"></p-sortIcon></th>
+              <th>Live Video Feed</th>
+              <th>Marking Scheme</th>
+              <th style="width: 10rem">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-exam>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="exam"></p-tableCheckbox>
+              </td>
+              <td>
+                <div class="font-bold text-900">{{ exam.name }}</div>
+                <small class="text-500">ID: #{{ exam.id }}</small>
+              </td>
+              <td>
+                <span class="font-semibold text-700"><i class="pi pi-clock mr-1 text-500"></i> {{ exam.durationMinutes }} mins</span>
+              </td>
+              <td>
+                <span class="status-pill status-pill-info font-bold">{{ exam.passPoint }}%</span>
+              </td>
+              <td>
+                <span class="status-pill" [ngClass]="exam.hasLiveVideo ? 'status-pill-answered' : 'status-pill-unanswered'">
+                  {{ exam.hasLiveVideo ? '● LIVE STREAM' : 'Disabled' }}
+                </span>
+              </td>
+              <td>
+                <span class="diff-badge" [ngClass]="exam.enableNegativeMarking ? 'diff-badge-medium' : 'diff-badge-easy'">
+                  {{ exam.enableNegativeMarking ? '+4 / -1 Penalty' : '+4 / 0 Standard' }}
+                </span>
+              </td>
+              <td>
+                <div class="flex gap-2">
+                  <button pButton pRipple icon="pi pi-question" class="p-button-rounded p-button-info p-button-sm" (click)="showQuestions(exam)" pTooltip="Question Bank"></button>
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-sm" (click)="editExam(exam)" pTooltip="Edit Test"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning p-button-sm" (click)="deleteExam(exam)" pTooltip="Delete"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Details Dialog -->
+  <p-dialog [(visible)]="examDialog" [style]="{width: '540px'}" header="Examination & Assessment Details" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="field mb-3">
+        <label for="name" class="font-bold text-sm block mb-1">Assessment Name</label>
+        <input type="text" pInputText id="name" [(ngModel)]="exam.name" placeholder="e.g. Quantitative Aptitude & Logic (CAT-2026)" required autofocus />
+        <small class="p-error block" *ngIf="submitted && !exam.name">Exam name is required.</small>
+      </div>
+
+      <div class="grid mb-2">
+        <div class="col-6">
+          <label for="durationMinutes" class="font-bold text-sm block mb-1">Duration (Minutes)</label>
+          <input type="number" pInputText id="durationMinutes" [(ngModel)]="exam.durationMinutes" min="1" required />
+        </div>
+        <div class="col-6">
+          <label for="passPoint" class="font-bold text-sm block mb-1">Pass Cutoff (%)</label>
+          <input type="number" pInputText id="passPoint" [(ngModel)]="exam.passPoint" min="0" max="100" />
+        </div>
+      </div>
+
+      <div class="grid mb-2">
+        <div class="col-6">
+          <label for="examDateStart" class="font-bold text-sm block mb-1">Start Date</label>
+          <input type="datetime-local" pInputText id="examDateStart" [(ngModel)]="exam.examDateStart" />
+        </div>
+        <div class="col-6">
+          <label for="examDateEnd" class="font-bold text-sm block mb-1">End Date</label>
+          <input type="datetime-local" pInputText id="examDateEnd" [(ngModel)]="exam.examDateEnd" />
+        </div>
+      </div>
+
+      <!-- Live Video iframe Configuration -->
+      <div class="surface-ground p-3 border-round-lg mb-3 border-1 surface-border">
+        <div class="flex align-items-center justify-content-between mb-2">
+          <label class="font-bold text-sm text-900 m-0">
+            <i class="pi pi-video mr-1 text-red-500"></i> Live Video / Proctoring Stream
+          </label>
+          <input type="checkbox" [(ngModel)]="exam.hasLiveVideo" style="width: 1.2rem; height: 1.2rem;" />
+        </div>
+
+        <div *ngIf="exam.hasLiveVideo" class="mt-3">
+          <label class="text-xs font-semibold block mb-1">Live Video Stream Embed URL (YouTube/Vimeo/WebRTC)</label>
+          <input type="text" pInputText [(ngModel)]="exam.videoIframeUrl" placeholder="https://www.youtube.com/embed/jfKfPfyJRdk" class="w-full text-sm mb-2" />
+          <small class="text-500 block mb-2">Note: Must be an embeddable URL (e.g. /embed/ URL format).</small>
+
+          <label class="text-xs font-semibold block mb-1">Proctor Instructions for Candidates</label>
+          <input type="text" pInputText [(ngModel)]="exam.videoInstructions" placeholder="e.g. Keep your webcam centered. No headsets permitted." class="w-full text-sm" />
+        </div>
+      </div>
+
+      <!-- Negative Marking Policy System -->
+      <div class="surface-ground p-3 border-round-lg mb-3 border-1 surface-border" [style.border-left]="exam.enableNegativeMarking ? '4px solid #f59e0b' : '4px solid #94a3b8'">
+        <div class="flex align-items-center justify-content-between mb-2">
+          <div>
+            <label class="font-bold text-sm text-900 m-0 block">
+              <i class="pi pi-shield mr-1" [ngClass]="exam.enableNegativeMarking ? 'text-yellow-600' : 'text-500'"></i>
+              Negative Marking Policy System
+            </label>
+            <span class="text-xs text-600">Apply deductions for incorrect candidate answers</span>
+          </div>
+          <input type="checkbox" [(ngModel)]="exam.enableNegativeMarking" style="width: 1.3rem; height: 1.3rem; cursor: pointer;" />
+        </div>
+
+        <div *ngIf="exam.enableNegativeMarking" class="p-2 border-round-md bg-yellow-50 border-1 border-yellow-200 text-xs text-yellow-900 line-height-2">
+          <strong>✓ Negative Marking ACTIVE:</strong> Correct answers receive <strong>+4.0</strong> marks. Incorrect answers incur a <strong>-1.0 mark (-25%) penalty deduction</strong>. Unanswered or skipped questions receive <strong>0.0</strong> penalty.
+        </div>
+        <div *ngIf="!exam.enableNegativeMarking" class="p-2 border-round-md bg-green-50 border-1 border-green-200 text-xs text-green-900 line-height-2">
+          <strong>○ Standard Non-Negative Marking:</strong> Correct answers receive <strong>+4.0</strong> marks. Incorrect answers receive <strong>0.0</strong> marks with no deduction.
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+      <button pButton pRipple label="Save Assessment" icon="pi pi-check" class="p-button-primary" (click)="saveExam()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Delete Dialog -->
+  <p-dialog [(visible)]="deleteExamDialog" header="Confirm Deletion" [modal]="true" [style]="{width:'400px'}">
+    <div class="flex align-items-center gap-3">
+      <i class="pi pi-exclamation-triangle text-3xl text-yellow-500"></i>
+      <span *ngIf="exam">Are you sure you want to delete <b>{{exam.name}}</b>?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteExamDialog = false"></button>
+      <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Yes, Delete" (click)="confirmDelete()"></button>
+    </ng-template>
+  </p-dialog>
+</div>

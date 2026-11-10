@@ -1,0 +1,149 @@
+/* ========================================================================= */
+/* MINIMALIST & AESTHETIC STUDENT GRADES STYLES                              */
+/* ========================================================================= */
+
+.academic-term-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+
+  .dot-separator {
+    color: var(--border-hover);
+  }
+}
+
+.course-picker-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-xl);
+  margin-bottom: 2rem;
+
+  .picker-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .picker-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  }
+
+  .picker-meta {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .dot-separator {
+      color: var(--border-hover);
+    }
+  }
+}
+
+/* Metric Overview Cards */
+.stats-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+
+  .stat-metric-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0.5rem 0 0.25rem 0;
+      line-height: 1.1;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+/* Grades Table Card */
+.grades-table-card {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+
+  .table-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-hairline);
+
+    h3 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .record-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  }
+
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+}
+
+/* Empty State Card */
+.empty-grades-card {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  border-radius: var(--radius-xl);
+
+  i {
+    font-size: 2.25rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}

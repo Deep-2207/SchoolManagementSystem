@@ -1,0 +1,301 @@
+/* ========================================================================= */
+/* MINIMALIST & AESTHETIC USER COURSES INDEX STYLES                          */
+/* ========================================================================= */
+
+.academic-term-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+
+  .dot-separator {
+    color: var(--border-hover);
+  }
+}
+
+.section-title-row {
+  margin-bottom: 1.25rem;
+
+  .section-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .section-subtext {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+  }
+}
+
+/* Enrolled Modules Stack */
+.courses-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.enrolled-module-card {
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+
+  .module-main-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    .module-primary-info {
+      flex: 1;
+      min-width: 260px;
+
+      .module-title-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+
+        .dept-tag {
+          font-size: 0.6875rem;
+          color: var(--text-muted);
+          background: var(--bg-surface-subtle);
+          padding: 0.15rem 0.5rem;
+          border-radius: var(--radius-sm);
+          border: 1px solid var(--border-hairline);
+        }
+      }
+
+      .module-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+      }
+
+      .module-instructor {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+    }
+
+    .module-schedule-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .schedule-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        background: var(--bg-surface-subtle);
+        padding: 0.35rem 0.65rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-hairline);
+
+        i {
+          font-size: 0.75rem;
+          color: var(--text-muted);
+        }
+      }
+    }
+
+    .module-action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+
+  /* Expanded Exams Drawer */
+  .exams-drawer {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-hairline);
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+
+      h4 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      .drawer-badge {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+    }
+
+    .exams-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .exam-row-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--bg-surface-subtle);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-lg);
+
+        .exam-row-meta {
+          .exam-row-title-line {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            margin-bottom: 0.25rem;
+
+            .exam-name {
+              font-size: 0.9375rem;
+              font-weight: 600;
+              color: var(--text-primary);
+              margin: 0;
+            }
+          }
+
+          .exam-dates-line {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          }
+        }
+      }
+    }
+
+    .no-exams-box {
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      background: var(--bg-surface-subtle);
+      border-radius: var(--radius-md);
+
+      i {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+    }
+  }
+}
+
+/* Catalog Filter Strip */
+.filter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 1.5rem;
+
+  .filter-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .filter-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+  }
+
+  .filter-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+}
+
+/* Available Catalog Grid */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+
+  .catalog-card {
+    padding: 1.25rem;
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .catalog-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+
+      .dept-tag {
+        font-size: 0.6875rem;
+        color: var(--text-muted);
+        background: var(--bg-surface-subtle);
+        padding: 0.15rem 0.5rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-hairline);
+      }
+    }
+
+    .catalog-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem 0;
+    }
+
+    .catalog-card-instructor {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin: 0 0 1rem 0;
+    }
+
+    .catalog-card-schedule {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-hairline);
+      margin-bottom: 1.25rem;
+
+      .schedule-text {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+    }
+
+    .catalog-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+}

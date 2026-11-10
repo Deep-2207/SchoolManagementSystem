@@ -1,0 +1,190 @@
+<div class="modern-container fade-in">
+  
+  <!-- School Classroom Academy Blackboard Banner -->
+  <div class="school-blackboard-banner mb-4 slide-up">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <div class="flex align-items-center gap-2 mb-1">
+          <span class="banner-badge">
+            <i class="pi pi-compass"></i>
+            St. Jude Academy • Student Classroom Wing
+          </span>
+          <span class="banner-badge" style="color: #fde68a; border-color: rgba(253, 230, 138, 0.35);">
+            Spring Term 2026
+          </span>
+        </div>
+        <h1 class="banner-title">Welcome back, {{ user?.name || 'Candidate Student' }}</h1>
+        <p class="banner-subtitle">Classroom desk, timed proctored examinations, and verified report cards</p>
+      </div>
+
+      <div class="header-stats" *ngIf="user">
+        <div class="stat-card bg-white-alpha-10 p-3 border-round-xl border-1 border-white-alpha-20 flex align-items-center gap-3">
+          <i class="pi pi-user text-2xl text-green-300"></i>
+          <div>
+            <span class="text-xs uppercase tracking-wider text-green-300 font-bold block">Candidate ID</span>
+            <span class="font-mono text-xl font-bold text-white">{{ user.number || 'Active Candidate' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Classroom Wing (Featured Active Broadcast) -->
+  <div class="modern-section" *ngIf="featuredLiveClass">
+    <div class="section-title-row">
+      <div class="flex align-items-center gap-2">
+        <span class="live-dot" style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block;"></span>
+        <h2 class="section-label m-0">Live Classroom Wing</h2>
+      </div>
+      <span class="section-subtext">Active lectures and proctored streams broadcasting now</span>
+    </div>
+
+    <div class="modern-card interactive-card p-4 border-left-3 border-red-500 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+        <div class="flex align-items-start gap-3">
+          <div class="live-tv-icon-circle bg-red-100 text-red-600 p-3 border-round-xl flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+            <i class="pi pi-video text-2xl"></i>
+          </div>
+          <div>
+            <div class="flex align-items-center gap-2 mb-1 flex-wrap">
+              <span class="status-badge" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-weight: 800;">
+                <span class="live-dot" style="width: 6px; height: 6px; background: #dc2626; border-radius: 50%; display: inline-block; margin-right: 4px;"></span>
+                BROADCASTING LIVE
+              </span>
+              <span class="dept-tag font-mono" *ngIf="featuredLiveClass.course">{{ featuredLiveClass.course.name }}</span>
+            </div>
+            <h3 class="font-bold text-xl text-900 m-0 mb-1">{{ featuredLiveClass.name }}</h3>
+            <p class="text-600 text-sm m-0">
+              Faculty: <strong>{{ featuredLiveClass.course?.teacher?.name || 'Dr. Alan Turing' }}</strong> • 
+              <span>{{ featuredLiveClass.videoInstructions || 'Classroom proctoring session is active.' }}</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex align-items-center gap-2">
+          <button class="modern-btn modern-btn-primary px-4 py-2" (click)="goToLiveClass(featuredLiveClass.id)">
+            <i class="pi pi-play mr-1"></i>
+            Enter Live Classroom
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Action Navigation Tiles (Minimalist Elevated Cards) -->
+  <div class="modern-section">
+    <div class="section-title-row">
+      <h2 class="section-label">Quick Actions</h2>
+      <span class="section-subtext">Direct navigation</span>
+    </div>
+    
+    <div class="quick-actions-grid">
+      <div class="action-tile modern-card interactive-card" (click)="goToLiveClass()">
+        <div class="action-top">
+          <div class="action-icon-pill" style="background: #fee2e2; color: #dc2626;">
+            <i class="pi pi-video"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">Live Classrooms</h3>
+          <p class="action-desc">Watch active faculty video lectures & proctor feeds</p>
+        </div>
+      </div>
+
+      <div class="action-tile modern-card interactive-card" (click)="goToExams()">
+        <div class="action-top">
+          <div class="action-icon-pill">
+            <i class="pi pi-book"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">My Courses & Exams</h3>
+          <p class="action-desc">Access enrolled modules and live timed exams</p>
+        </div>
+      </div>
+
+      <div class="action-tile modern-card interactive-card" (click)="goToGrades()">
+        <div class="action-top">
+          <div class="action-icon-pill">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">Academic Grades</h3>
+          <p class="action-desc">Review your verified scores, cutoffs, and pass status</p>
+        </div>
+      </div>
+
+      <div class="action-tile modern-card interactive-card" (click)="goToProfile()">
+        <div class="action-top">
+          <div class="action-icon-pill">
+            <i class="pi pi-user-edit"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">Profile Account</h3>
+          <p class="action-desc">Account credentials and department details</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Account Profile Details -->
+  <div class="modern-section" *ngIf="user">
+    <div class="section-title-row">
+      <h2 class="section-label">Account Details</h2>
+      <span class="section-subtext">Verified credentials</span>
+    </div>
+
+    <div class="account-card modern-card">
+      <div class="account-card-header">
+        <div class="account-avatar">
+          <span>{{ (user.name ? user.name.slice(0, 2) : 'ST') | uppercase }}</span>
+        </div>
+        <div class="account-header-info">
+          <div class="account-name-row">
+            <h3 class="account-name">{{ user.name || 'Student' }}</h3>
+            <span class="status-badge status-active">
+              <span class="pulse-dot"></span>
+              ACTIVE
+            </span>
+          </div>
+          <span class="account-sub">{{ user.isAdmin ? 'Teacher / Administrator' : 'Degree Student' }}</span>
+        </div>
+      </div>
+
+      <div class="account-fields-grid">
+        <div class="field-item">
+          <span class="field-label">Student ID Number</span>
+          <span class="field-value font-mono">{{ user.number || 'N/A' }}</span>
+        </div>
+
+        <div class="field-item">
+          <span class="field-label">Institutional Email</span>
+          <span class="field-value">{{ user.email || 'N/A' }}</span>
+        </div>
+
+        <div class="field-item">
+          <span class="field-label">Current Session</span>
+          <span class="field-value font-mono">{{ getCurrentDate() }}</span>
+        </div>
+
+        <div class="field-item">
+          <span class="field-label">Security Status</span>
+          <span class="field-value">Authenticated & Verified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="!user" class="loading-container modern-card">
+    <i class="pi pi-spin pi-spinner"></i>
+    <p>Loading academic profile...</p>
+  </div>
+
+</div>

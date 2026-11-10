@@ -1,0 +1,39 @@
+<div class="layout-topbar modern-topbar">
+    <a class="layout-topbar-logo modern-logo" routerLink="">
+        <div class="logo-icon" style="background: #0d2f24; color: #ffffff; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            🎓
+        </div>
+        <div class="logo-text">
+            <span class="logo-title font-bold text-900" style="letter-spacing: -0.02em;">St. Jude Academy</span>
+            <span class="logo-subtitle text-xs text-500 font-semibold">Scholastic Assessment Portal</span>
+        </div>
+    </a>
+
+    <!-- Menu Button (For mobile view, etc.) -->
+    <button #menubutton class="p-link layout-menu-button layout-topbar-button modern-menu-btn" (click)="layoutService.onMenuToggle()">
+        <i class="pi pi-bars"></i>
+    </button>
+
+    <!-- Profile Button -->
+    <div class="layout-topbar-menu">
+        <button #topbarmenubutton class="p-link layout-topbar-button modern-profile-btn" (click)="toggleProfileMenu($event)">
+            <div class="profile-avatar" [style.background]="user?.isSuperAdmin ? '#78350f' : (user?.isTeacher ? '#0d2f24' : '#1e3a8a')" style="color: #ffffff; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                <i [class]="user?.isSuperAdmin ? 'pi pi-shield' : (user?.isTeacher ? 'pi pi-user-edit' : 'pi pi-user')"></i>
+            </div>
+            <div class="profile-info text-left">
+                <div class="flex align-items-center gap-1">
+                    <span class="profile-name font-bold text-sm text-800">{{ user?.name || 'Academic User' }}</span>
+                    <span class="status-pill text-xs py-0 px-1 font-bold" 
+                          [ngClass]="user?.isSuperAdmin ? 'status-pill-warning' : (user?.isTeacher ? 'status-pill-info' : 'status-pill-answered')">
+                        {{ user?.isSuperAdmin ? 'Admin' : (user?.isTeacher ? 'Teacher' : 'Student') }}
+                    </span>
+                </div>
+                <span class="profile-email text-xs text-500 block">{{ user?.email }}</span>
+            </div>
+            <i class="pi pi-chevron-down profile-arrow ml-2 text-400"></i>
+        </button>
+
+        <!-- PrimeNG p-menu for Profile -->
+        <p-menu #profileMenu [model]="menuItems" [popup]="true"></p-menu>
+    </div>
+</div>

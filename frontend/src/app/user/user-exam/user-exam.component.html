@@ -1,0 +1,291 @@
+<div class="modern-container fade-in">
+  <p-toast></p-toast>
+  
+  <!-- Unanswered Questions Notice Dialog -->
+  <p-dialog 
+    header="Unanswered Questions Review" 
+    [(visible)]="showUnansweredDialog" 
+    [modal]="true" 
+    [closable]="true"
+    [style]="{width: '540px'}"
+    [baseZIndex]="10000">
+    
+    <div class="unanswered-dialog-content py-2">
+      <div class="dialog-message mb-3">
+        <p class="font-bold text-base text-red-600 m-0">You have left <strong>{{ unansweredQuestions.length }}</strong> question(s) unanswered.</p>
+        <p class="text-500 text-sm mt-1" *ngIf="exam.enableNegativeMarking">Under competitive negative scoring (+4 for correct, -1 for wrong), unanswered questions incur 0 penalty. Would you like to submit now?</p>
+        <p class="text-500 text-sm mt-1" *ngIf="!exam.enableNegativeMarking">Under standard scoring (+4 for correct, 0 for wrong), unanswered questions incur 0 penalty. Would you like to submit now?</p>
+      </div>
+      
+      <div class="dialog-actions flex justify-content-end gap-2 pt-3 border-top-1 surface-border">
+        <button 
+          class="modern-btn modern-btn-secondary" 
+          (click)="cancelSubmitWithUnanswered()">
+          Return to Examination
+        </button>
+        <button 
+          class="modern-btn modern-btn-warning" 
+          (click)="confirmSubmitWithUnanswered()">
+          Submit Anyway
+        </button>
+      </div>
+    </div>
+  </p-dialog>
+  
+  <!-- School Classroom Academy Top Bar -->
+  <div class="school-blackboard-banner mb-3 slide-up" *ngIf="exam">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <div class="flex align-items-center gap-2 mb-1 flex-wrap">
+          <span class="banner-badge">
+            <span class="live-dot" style="width: 7px; height: 7px; background: #a7f3d0; border-radius: 50%; display: inline-block;"></span>
+            Classroom Assessment Hall • Desk #04
+          </span>
+          <span class="banner-badge" *ngIf="exam.enableNegativeMarking" style="color: #fde68a; border-color: rgba(253, 230, 138, 0.4);">
+            ⚖️ Marking: +4 / -1 Penalty
+          </span>
+          <span class="banner-badge" *ngIf="!exam.enableNegativeMarking" style="color: #a7f3d0; border-color: rgba(167, 243, 208, 0.4);">
+            ⚖️ Marking: +4 / 0 Standard
+          </span>
+          <span class="banner-badge" style="color: #93c5fd; border-color: rgba(147, 197, 253, 0.4);">
+            💾 {{ isAutoSaving ? 'Saving...' : 'Autosaved: ' + lastAutoSavedTime }}
+          </span>
+        </div>
+        <h1 class="banner-title">{{ exam.name }}</h1>
+        <p class="banner-subtitle" *ngIf="exam.course">Course: {{ exam.course.name }} | Pass Cutoff: {{ exam.passPoint }}%</p>
+      </div>
+
+      <!-- Real-time Desk Countdown Timer -->
+      <div class="exam-timer-capsule" 
+           [ngClass]="{
+             'timer-warning': remainingSeconds <= 30 && remainingSeconds > 10,
+             'timer-danger': remainingSeconds <= 10 && remainingSeconds > 0,
+             'timer-expired': remainingSeconds === 0
+           }">
+        <div class="timer-icon">
+          <i class="pi pi-clock" [ngClass]="{'pi-spin': remainingSeconds <= 10 && remainingSeconds > 0}"></i>
+        </div>
+        <div class="timer-data">
+          <span class="timer-label">Time Remaining</span>
+          <span class="timer-digits" *ngIf="remainingSeconds > 0">{{ formatTime(remainingSeconds) }}</span>
+          <span class="timer-digits timer-expired-text" *ngIf="remainingSeconds === 0">00:00 (Time Expired)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Switcher Ribbon -->
+  <div class="section-nav-ribbon modern-card p-2 mb-3 flex gap-2 overflow-x-auto">
+    <button 
+      *ngFor="let sec of sections"
+      class="section-tab-btn"
+      [ngClass]="{'section-tab-active': selectedSection === sec.id}"
+      (click)="filterBySection(sec.id)">
+      <i [class]="sec.icon + ' mr-1'"></i>
+      {{ sec.name }}
+      <span class="section-tab-count">{{ getSectionQuestionCount(sec.id) }}</span>
+    </button>
+  </div>
+
+  <!-- Main Exam Split View -->
+  <div class="exam-layout-grid" *ngIf="!examResult && filteredQuestions.length > 0">
+    
+    <!-- Left Column: Active Question Sheet -->
+    <div class="questions-column">
+      <div class="question-block modern-card interactive-card p-4">
+        
+        <!-- Question Meta Row -->
+        <div class="flex justify-content-between align-items-center mb-3 pb-3 border-bottom-1 surface-border flex-wrap gap-2">
+          <div class="flex align-items-center gap-2">
+            <span class="font-bold text-lg text-900">
+              Question {{ currentQuestionIndex + 1 }}
+            </span>
+            <span class="text-500 text-sm">of {{ filteredQuestions.length }}</span>
+
+            <!-- Section Pill -->
+            <span class="section-pill {{ getSectionBadgeClass(filteredQuestions[currentQuestionIndex].section) }}">
+              {{ getSectionName(filteredQuestions[currentQuestionIndex].section) }}
+            </span>
+
+            <!-- Difficulty Badge -->
+            <span class="diff-badge {{ getDifficultyClass(filteredQuestions[currentQuestionIndex].difficulty) }}">
+              {{ getDifficultyLabel(filteredQuestions[currentQuestionIndex].difficulty, filteredQuestions[currentQuestionIndex]) }}
+            </span>
+          </div>
+
+          <div class="flex align-items-center gap-2">
+            <span class="status-pill status-pill-warning" *ngIf="markedForReview[filteredQuestions[currentQuestionIndex].id]">
+              <i class="pi pi-bookmark-fill mr-1"></i> Marked for Review
+            </span>
+            <span class="status-pill" [ngClass]="answers[filteredQuestions[currentQuestionIndex].id] ? 'status-pill-answered' : 'status-pill-unanswered'">
+              {{ answers[filteredQuestions[currentQuestionIndex].id] ? '✓ Answered' : 'Not Answered' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Question Problem Statement -->
+        <div class="question-stem-text mb-4 text-900 line-height-3 text-lg font-medium">
+          {{ filteredQuestions[currentQuestionIndex].question }}
+        </div>
+
+        <!-- Answer Options (A - E) -->
+        <div class="choices-stack flex flex-column gap-2 mb-4">
+          <div *ngFor="let opt of ['choiceA', 'choiceB', 'choiceC', 'choiceD', 'choiceE']; let idx = index" class="choice-option-row">
+            <div *ngIf="filteredQuestions[currentQuestionIndex][opt]" 
+                 class="choice-label-card p-3 border-round-lg cursor-pointer flex align-items-center justify-content-between border-1 transition-all"
+                 [ngClass]="{
+                   'choice-selected': answers[filteredQuestions[currentQuestionIndex].id] === (idx + 1)
+                 }"
+                 (click)="selectAnswer(filteredQuestions[currentQuestionIndex].id, idx + 1)">
+              
+              <div class="choice-left-group flex align-items-center gap-3">
+                <span class="choice-letter-badge font-bold flex align-items-center justify-content-center"
+                      [ngClass]="answers[filteredQuestions[currentQuestionIndex].id] === (idx + 1) ? 'bg-primary text-white' : 'surface-200 text-700'"
+                      style="width: 28px; height: 28px; border-radius: 50%;">
+                  {{ ['A', 'B', 'C', 'D', 'E'][idx] }}
+                </span>
+                <span class="choice-answer-text text-800 font-medium">
+                  {{ filteredQuestions[currentQuestionIndex][opt] }}
+                </span>
+              </div>
+
+              <div class="choice-radio-custom">
+                <i [class]="answers[filteredQuestions[currentQuestionIndex].id] === (idx + 1) ? 'pi pi-check-circle text-primary text-xl' : 'pi pi-circle text-400 text-xl'"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Row -->
+        <div class="flex justify-content-between align-items-center pt-3 border-top-1 surface-border flex-wrap gap-2">
+          <div class="flex gap-2">
+            <button 
+              class="modern-btn modern-btn-secondary"
+              (click)="goToPrevious()"
+              [disabled]="currentQuestionIndex === 0">
+              <i class="pi pi-arrow-left mr-1"></i> Previous
+            </button>
+            <button 
+              class="modern-btn modern-btn-secondary"
+              (click)="clearResponse(filteredQuestions[currentQuestionIndex].id)"
+              [disabled]="!answers[filteredQuestions[currentQuestionIndex].id]">
+              <i class="pi pi-refresh mr-1"></i> Clear Response
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <button 
+              class="modern-btn"
+              [style.background]="markedForReview[filteredQuestions[currentQuestionIndex].id] ? '#f3e8ff' : '#ffffff'"
+              [style.color]="'#7c3aed'"
+              [style.border]="'1.5px solid #c084fc'"
+              (click)="markForReviewAndNext(filteredQuestions[currentQuestionIndex].id)">
+              <i class="pi pi-bookmark mr-1"></i>
+              {{ markedForReview[filteredQuestions[currentQuestionIndex].id] ? 'Unmark & Next' : 'Mark for Review & Next' }}
+            </button>
+            <button 
+              class="modern-btn modern-btn-primary"
+              (click)="saveAndNext(filteredQuestions[currentQuestionIndex].id)">
+              Save & Next <i class="pi pi-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right Column: Live Proctor Video & 5-State Question Palette -->
+    <div class="navigator-column flex flex-column gap-3">
+      
+      <!-- Embedded Live Video iframe Dock -->
+      <div class="proctor-video-dock" *ngIf="exam.hasLiveVideo">
+        <div class="proctor-header">
+          <div class="proctor-live-indicator">
+            <span class="live-dot"></span>
+            PROCTOR LIVE STREAM
+          </div>
+          <button class="proctor-toggle-btn" (click)="isVideoMinimized = !isVideoMinimized" title="Minimize / Expand Video">
+            <i [class]="isVideoMinimized ? 'pi pi-window-maximize' : 'pi pi-window-minimize'"></i>
+          </button>
+        </div>
+
+        <div class="proctor-iframe-container" *ngIf="!isVideoMinimized && safeVideoUrl">
+          <iframe 
+            [src]="safeVideoUrl" 
+            title="Classroom Proctor Feed"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div class="p-2 text-xs text-400 bg-black-alpha-40 flex align-items-center gap-1" *ngIf="!isVideoMinimized">
+          <i class="pi pi-info-circle text-yellow-500"></i>
+          <span>{{ exam.videoInstructions || 'Classroom proctoring session is active.' }}</span>
+        </div>
+      </div>
+
+      <!-- 5-State CAT / GATE Examination Question Palette -->
+      <div class="navigator-card modern-card p-3">
+        <div class="flex justify-content-between align-items-center mb-3 pb-2 border-bottom-1 surface-border">
+          <h4 class="m-0 font-bold text-sm text-800">Question Palette</h4>
+          <span class="font-bold text-xs text-primary">
+            {{ (answers | keyvalue)?.length || 0 }} / {{ questions.length }} Answered
+          </span>
+        </div>
+
+        <!-- 5-State Color Legend -->
+        <div class="palette-legend grid mb-3 text-xs">
+          <div class="col-6 flex align-items-center gap-1 mb-1">
+            <span class="palette-swatch palette-swatch-unvisited">0</span>
+            <span class="text-600 font-medium">Not Visited</span>
+          </div>
+          <div class="col-6 flex align-items-center gap-1 mb-1">
+            <span class="palette-swatch palette-swatch-unanswered">0</span>
+            <span class="text-600 font-medium">Unanswered</span>
+          </div>
+          <div class="col-6 flex align-items-center gap-1">
+            <span class="palette-swatch palette-swatch-answered">✓</span>
+            <span class="text-600 font-medium">Answered</span>
+          </div>
+          <div class="col-6 flex align-items-center gap-1">
+            <span class="palette-swatch palette-swatch-review">★</span>
+            <span class="text-600 font-medium">Review</span>
+          </div>
+        </div>
+
+        <!-- Question Numbers Grid -->
+        <div class="navigator-grid grid gap-2 p-1 max-h-16rem overflow-y-auto">
+          <button 
+            *ngFor="let q of filteredQuestions; let i = index"
+            class="nav-cell-btn"
+            [ngClass]="{
+              'nav-active-cell': currentQuestionIndex === i,
+              'cell-answered': getQuestionState(q.id) === 'answered',
+              'cell-review': getQuestionState(q.id) === 'review',
+              'cell-answered-review': getQuestionState(q.id) === 'answered-review',
+              'cell-unanswered': getQuestionState(q.id) === 'unanswered',
+              'cell-unvisited': getQuestionState(q.id) === 'unvisited'
+            }"
+            (click)="goToQuestion(i)">
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <!-- Final Submit Button -->
+        <div class="pt-3 mt-3 border-top-1 surface-border">
+          <button 
+            class="modern-btn modern-btn-primary w-full flex justify-content-center align-items-center gap-2"
+            (click)="submitAnswers()"
+            [disabled]="!examActive || examResult">
+            <i class="pi pi-send"></i>
+            Finish & Submit Assessment
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,271 @@
+<div class="modern-container fade-in">
+  <!-- School Classroom Academy Header -->
+  <div class="school-blackboard-banner mb-4 slide-up">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <span class="banner-badge">
+          <i class="pi pi-shield"></i>
+          Super Admin Console
+        </span>
+        <h1 class="banner-title">Faculty & Teacher Management</h1>
+        <p class="banner-subtitle">Provision academic teachers, manage credentials, and assign institutional departments</p>
+      </div>
+      <div>
+        <button class="modern-btn modern-btn-primary" (click)="openInsertDialog()" style="background: #ffffff; color: #0d2f24; border: none; font-weight: 700;">
+          <i class="pi pi-user-plus mr-2"></i>
+          Provision New Teacher
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teachers Grid -->
+  <div class="modern-section">
+    <div class="teachers-grid">
+      <div *ngFor="let teacher of data; let i = index" 
+           class="teacher-card modern-card scale-in" 
+           [style.animation-delay]="(i * 0.08) + 's'">
+        
+        <div class="teacher-header">
+          <div class="teacher-avatar" [ngClass]="teacher.isSuperAdmin ? 'avatar-superadmin' : 'avatar-teacher'">
+            <i [class]="teacher.isSuperAdmin ? 'pi pi-shield' : 'pi pi-user'"></i>
+          </div>
+          <div class="teacher-info">
+            <div class="flex align-items-center gap-2 mb-1 flex-wrap">
+              <span class="status-pill" [ngClass]="teacher.isSuperAdmin ? 'status-pill-warning' : 'status-pill-info'">
+                {{ teacher.isSuperAdmin ? '👑 Super Admin' : '👨‍🏫 Faculty Teacher' }}
+              </span>
+              <span class="status-pill" [ngClass]="teacher.isActive ? 'status-pill-answered' : 'status-pill-unanswered'">
+                {{ teacher.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <h3 class="teacher-name">{{ teacher.name }}</h3>
+            <p class="teacher-email">{{ teacher.email }}</p>
+          </div>
+        </div>
+        
+        <div class="teacher-details mt-3 pt-3 border-top-1 surface-border">
+          <div class="detail-item mb-2 flex align-items-center justify-content-between">
+            <span class="text-500 font-medium text-xs"><i class="pi pi-building mr-1"></i> Department:</span>
+            <span class="font-bold text-xs text-800">{{ teacher.departmentName || 'General Faculty' }}</span>
+          </div>
+          <div class="detail-item flex align-items-center justify-content-between">
+            <span class="text-500 font-medium text-xs"><i class="pi pi-book mr-1"></i> Assigned Courses:</span>
+            <span class="font-bold text-xs text-800">{{ teacher.courses?.length || 0 }} course(s)</span>
+          </div>
+        </div>
+        
+        <div class="teacher-actions mt-3 pt-3 border-top-1 surface-border flex gap-2">
+          <button class="action-btn edit-btn w-full flex justify-content-center align-items-center gap-2" (click)="openUpdateDialog(teacher)">
+            <i class="pi pi-pencil"></i>
+            Edit Profile
+          </button>
+          <button class="action-btn delete-btn flex justify-content-center align-items-center" (click)="deleteTeacher(teacher)" title="Remove Account">
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="data.length === 0" class="modern-section">
+    <div class="modern-card empty-state">
+      <div class="empty-content text-center py-6">
+        <div class="empty-icon text-5xl text-400 mb-3">
+          <i class="pi pi-users"></i>
+        </div>
+        <h3 class="empty-title text-xl font-bold">No Faculty Members Registered</h3>
+        <p class="empty-message text-500 mb-4">Click below to provision the first teacher</p>
+        <button class="modern-btn modern-btn-primary" (click)="openInsertDialog()">
+          <i class="pi pi-plus mr-2"></i>
+          Provision Teacher
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Update Teacher Dialog -->
+<p-dialog 
+  header="Update Faculty Profile" 
+  [modal]="true" 
+  [(visible)]="isUpdate" 
+  [style]="{ width: '34rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content py-2">
+    <form [formGroup]="teacherForm" class="teacher-form">
+      <div class="field mb-3">
+        <label for="name" class="font-bold text-sm block mb-1">
+          <i class="pi pi-user mr-1"></i> Full Name
+        </label>
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name" 
+          placeholder="e.g. Dr. Alan Turing"
+          class="w-full" />
+      </div>
+      
+      <div class="field mb-3">
+        <label for="email" class="font-bold text-sm block mb-1">
+          <i class="pi pi-envelope mr-1"></i> Academic Email Address
+        </label>
+        <input 
+          pInputText 
+          id="email" 
+          formControlName="email" 
+          placeholder="e.g. turing@school.edu"
+          class="w-full" />
+      </div>
+      
+      <div class="field mb-3">
+        <label for="departmentId" class="font-bold text-sm block mb-1">
+          <i class="pi pi-building mr-1"></i> Department Assignment
+        </label>
+        <select id="departmentId" formControlName="departmentId" class="p-inputtext w-full">
+          <option [ngValue]="null">-- Select Department --</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+        </select>
+      </div>
+
+      <div class="field mb-3">
+        <label for="password" class="font-bold text-sm block mb-1">
+          <i class="pi pi-lock mr-1"></i> Update Password (optional)
+        </label>
+        <input 
+          pInputText 
+          type="password"
+          id="password" 
+          formControlName="password" 
+          placeholder="Leave blank to preserve current password"
+          class="w-full" />
+      </div>
+
+      <div class="grid mt-2">
+        <div class="col-6">
+          <label class="flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" formControlName="isSuperAdmin" style="width: 1.1rem; height: 1.1rem;" />
+            <span class="text-sm font-semibold">Super Administrator</span>
+          </label>
+        </div>
+        <div class="col-6">
+          <label class="flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" formControlName="isActive" style="width: 1.1rem; height: 1.1rem;" />
+            <span class="text-sm font-semibold">Account Active</span>
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2 pt-2">
+      <button class="modern-btn modern-btn-secondary" (click)="isUpdate = false; teacherForm.reset()">
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="saveTeacher()"
+        [disabled]="teacherForm.invalid">
+        <i class="pi pi-check mr-1"></i>
+        Save Changes
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Insert Teacher Dialog -->
+<p-dialog 
+  header="Provision New Faculty Account" 
+  [modal]="true" 
+  [(visible)]="isInsert" 
+  [style]="{ width: '34rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content py-2">
+    <form [formGroup]="teacherForm" class="teacher-form">
+      <div class="field mb-3">
+        <label for="newName" class="font-bold text-sm block mb-1">
+          <i class="pi pi-user mr-1"></i> Full Name
+        </label>
+        <input 
+          pInputText 
+          id="newName" 
+          formControlName="name" 
+          placeholder="e.g. Prof. Claude Shannon"
+          class="w-full" />
+      </div>
+      
+      <div class="field mb-3">
+        <label for="newEmail" class="font-bold text-sm block mb-1">
+          <i class="pi pi-envelope mr-1"></i> Academic Email Address
+        </label>
+        <input 
+          pInputText 
+          id="newEmail" 
+          formControlName="email" 
+          placeholder="e.g. shannon@school.edu"
+          class="w-full" />
+      </div>
+      
+      <div class="field mb-3">
+        <label for="newDept" class="font-bold text-sm block mb-1">
+          <i class="pi pi-building mr-1"></i> Academic Department
+        </label>
+        <select id="newDept" formControlName="departmentId" class="p-inputtext w-full">
+          <option [ngValue]="null">-- Select Department --</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+        </select>
+      </div>
+
+      <div class="field mb-3">
+        <label for="newPassword" class="font-bold text-sm block mb-1">
+          <i class="pi pi-lock mr-1"></i> Initial Password
+        </label>
+        <input 
+          pInputText 
+          type="password"
+          id="newPassword" 
+          formControlName="password" 
+          placeholder="Enter initial password (e.g. admin123)"
+          class="w-full" />
+      </div>
+
+      <div class="grid mt-2">
+        <div class="col-6">
+          <label class="flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" formControlName="isSuperAdmin" style="width: 1.1rem; height: 1.1rem;" />
+            <span class="text-sm font-semibold">Super Administrator</span>
+          </label>
+        </div>
+        <div class="col-6">
+          <label class="flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" formControlName="isActive" style="width: 1.1rem; height: 1.1rem;" />
+            <span class="text-sm font-semibold">Account Active</span>
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2 pt-2">
+      <button class="modern-btn modern-btn-secondary" (click)="closeInsertDialog()">
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="insertTeacher()"
+        [disabled]="teacherForm.invalid">
+        <i class="pi pi-plus mr-1"></i>
+        Create Faculty Account
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

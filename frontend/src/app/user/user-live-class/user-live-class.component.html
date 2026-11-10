@@ -1,0 +1,279 @@
+<div class="modern-container fade-in" [ngClass]="{'theater-mode': isTheaterMode}">
+  <p-toast></p-toast>
+
+  <!-- School Classroom Academy Blackboard Banner -->
+  <div class="school-blackboard-banner mb-3 slide-up" *ngIf="selectedClass">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <div class="flex align-items-center gap-2 mb-1 flex-wrap">
+          <span class="banner-badge live-broadcast-badge">
+            <span class="live-pulse-dot"></span>
+            🔴 LIVE BROADCAST
+          </span>
+          <span class="banner-badge" style="color: #a7f3d0; border-color: rgba(167, 243, 208, 0.4);">
+            <i class="pi pi-users mr-1"></i> {{ activeStudentsCount }} Students in Class
+          </span>
+          <span class="banner-badge" *ngIf="selectedClass.course" style="color: #93c5fd; border-color: rgba(147, 197, 253, 0.4);">
+            <i class="pi pi-book mr-1"></i> {{ selectedClass.course.name }}
+          </span>
+          <span class="banner-badge" *ngIf="selectedClass.enableNegativeMarking" style="color: #fde68a; border-color: rgba(253, 230, 138, 0.4);">
+            ⚖️ Marking: +4 / -1
+          </span>
+        </div>
+        <h1 class="banner-title">{{ selectedClass.name }}</h1>
+        <p class="banner-subtitle">
+          Faculty Instructor: {{ selectedClass.course?.teacher?.name || 'Academic Faculty' }} • 
+          {{ selectedClass.course?.department?.name || 'Department of Computer Science' }}
+        </p>
+      </div>
+
+      <div class="header-actions flex gap-2">
+        <button class="modern-btn modern-btn-secondary" (click)="toggleTheaterMode()">
+          <i [class]="isTheaterMode ? 'pi pi-window-minimize' : 'pi pi-window-maximize'" class="mr-1"></i>
+          {{ isTheaterMode ? 'Standard View' : 'Theater View' }}
+        </button>
+        <button 
+          class="modern-btn modern-btn-primary" 
+          (click)="launchAssessment(selectedClass.id)">
+          <i class="pi pi-play mr-1"></i>
+          Launch Live Exam
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Stream Class Selector Tabs (If multiple live classes exist) -->
+  <div class="live-selector-ribbon modern-card p-2 mb-3 flex gap-2 overflow-x-auto" *ngIf="liveClasses.length > 1">
+    <div class="flex align-items-center px-2 text-xs font-bold text-500 uppercase tracking-wider">
+      <i class="pi pi-video mr-1 text-red-500"></i> Active Streams:
+    </div>
+    <button 
+      *ngFor="let lc of liveClasses"
+      class="stream-tab-btn"
+      [ngClass]="{'stream-tab-active': selectedClass?.id === lc.id}"
+      (click)="selectClass(lc)">
+      <span class="tab-live-dot"></span>
+      {{ lc.name }}
+      <span class="stream-course-tag" *ngIf="lc.course">({{ lc.course.name }})</span>
+    </button>
+  </div>
+
+  <!-- Main Theater Grid -->
+  <div class="classroom-layout-grid" *ngIf="selectedClass">
+
+    <!-- Left / Center: Live Video Theater Player & Details -->
+    <div class="video-theater-column">
+      
+      <!-- Video Player Card -->
+      <div class="player-wrapper modern-card p-0 overflow-hidden mb-3">
+        <!-- Player Chrome Bar -->
+        <div class="player-chrome-bar px-3 py-2 flex justify-content-between align-items-center bg-gray-900 text-white">
+          <div class="flex align-items-center gap-2">
+            <span class="live-indicator-pill">
+              <span class="live-pulse-dot"></span> LIVE
+            </span>
+            <span class="stream-title-text font-bold text-sm text-gray-200">
+              {{ selectedClass.name }}
+            </span>
+            <span class="stream-res-badge">HD 1080p</span>
+          </div>
+
+          <div class="flex align-items-center gap-2">
+            <button class="chrome-btn" (click)="toggleTheaterMode()" title="Toggle Theater View">
+              <i [class]="isTheaterMode ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 16:9 Video iFrame Container -->
+        <div class="video-iframe-aspect-ratio" *ngIf="safeVideoUrl">
+          <iframe 
+            [src]="safeVideoUrl" 
+            title="Classroom Live Lecture Stream"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Instructor & Classroom Notice Card -->
+      <div class="modern-card p-4 mb-3">
+        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start gap-3 mb-3 pb-3 border-bottom-1 surface-border">
+          <div class="flex align-items-center gap-3">
+            <div class="instructor-avatar">
+              <span>{{ (selectedClass.course?.teacher?.name ? selectedClass.course.teacher.name.slice(0, 2) : 'DR') | uppercase }}</span>
+            </div>
+            <div>
+              <h3 class="m-0 font-bold text-lg text-900">{{ selectedClass.name }}</h3>
+              <p class="m-0 text-500 text-sm mt-1">
+                Course: <strong class="text-800">{{ selectedClass.course?.name }}</strong> 
+                <span class="mx-2">•</span> 
+                Faculty: <strong class="text-800">{{ selectedClass.course?.teacher?.name || 'Dr. Alan Turing' }}</strong>
+              </p>
+            </div>
+          </div>
+
+          <div class="schedule-badge-capsule">
+            <i class="pi pi-clock text-primary"></i>
+            <span>{{ selectedClass.course?.day || 'Mon & Wed' }} &#64; {{ selectedClass.course?.time || '10:00 AM' }}</span>
+          </div>
+        </div>
+
+        <!-- Live Teacher Instructions Callout -->
+        <div class="teacher-instruction-callout p-3 border-round-lg mb-3">
+          <div class="flex align-items-start gap-2">
+            <i class="pi pi-megaphone text-xl text-yellow-600 mt-1"></i>
+            <div>
+              <span class="font-bold text-sm text-900 block mb-1">Faculty Lecture Instructions:</span>
+              <p class="m-0 text-700 text-sm line-height-3">
+                {{ selectedClass.videoInstructions || 'Classroom session is active. Keep your desk clear and follow the live whiteboard walk-through.' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Launch Associated Exam Banner -->
+        <div class="exam-launch-banner p-3 border-round-xl surface-ground border-1 surface-border flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+          <div class="flex align-items-center gap-3">
+            <div class="exam-icon-circle bg-primary-100 text-primary p-2 border-round-circle flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+              <i class="pi pi-pencil text-xl"></i>
+            </div>
+            <div>
+              <div class="flex align-items-center gap-2">
+                <span class="font-bold text-base text-900">Associated Assessment Ready</span>
+                <span class="status-badge status-active">Active</span>
+              </div>
+              <p class="m-0 text-500 text-xs mt-1">
+                Duration: {{ selectedClass.durationMinutes || 60 }} mins • Pass Cutoff: {{ selectedClass.passPoint }}% • 
+                {{ selectedClass.enableNegativeMarking ? 'Marking: +4 / -1' : 'Marking: +4 / 0' }}
+              </p>
+            </div>
+          </div>
+
+          <button 
+            class="modern-btn modern-btn-primary" 
+            (click)="launchAssessment(selectedClass.id)">
+            <i class="pi pi-arrow-right mr-1"></i>
+            Enter Exam Hall
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Column: Interactive Live Classroom Q&A & Doubts Chat -->
+    <div class="classroom-sidebar-column flex flex-column gap-3">
+
+      <!-- Live Q&A Chat Box -->
+      <div class="chat-card modern-card p-3 flex flex-column">
+        
+        <div class="chat-header pb-2 mb-2 border-bottom-1 surface-border flex justify-content-between align-items-center">
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-comments text-primary text-lg"></i>
+            <h4 class="m-0 font-bold text-sm text-800">Classroom Q&A Stream</h4>
+          </div>
+          <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 border-round-pill">
+            <span class="live-dot" style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block; margin-right: 4px;"></span>
+            Live ({{ chatMessages.length }})
+          </span>
+        </div>
+
+        <!-- Chat Messages Feed -->
+        <div class="chat-messages-container flex-1 overflow-y-auto pr-1" id="classroom-chat-feed">
+          <div *ngFor="let msg of chatMessages" class="chat-item mb-2 p-2 border-round-lg transition-all"
+               [ngClass]="{
+                 'chat-teacher': msg.role === 'teacher',
+                 'chat-ta': msg.role === 'ta',
+                 'chat-student': msg.role === 'student'
+               }">
+            
+            <div class="chat-item-header flex justify-content-between align-items-center mb-1">
+              <div class="flex align-items-center gap-2">
+                <span class="chat-avatar-chip font-bold text-xs">{{ msg.avatar }}</span>
+                <span class="chat-sender-name font-bold text-xs">{{ msg.sender }}</span>
+                <span *ngIf="msg.role === 'teacher'" class="role-badge role-teacher">Instructor</span>
+                <span *ngIf="msg.role === 'ta'" class="role-badge role-ta">TA</span>
+              </div>
+              <span class="chat-time text-xs text-400 font-mono">{{ msg.timestamp }}</span>
+            </div>
+
+            <p class="chat-text text-sm m-0 line-height-2">{{ msg.text }}</p>
+
+            <div class="chat-actions flex justify-content-end mt-1">
+              <button class="upvote-btn text-xs" (click)="upvoteMessage(msg)" [ngClass]="{'upvoted': msg.isUpvoted}">
+                <i class="pi pi-thumbs-up mr-1"></i>
+                <span>{{ msg.upvotes }}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="chat-input-bar pt-2 border-top-1 surface-border flex gap-2">
+          <input 
+            type="text" 
+            pInputText 
+            [(ngModel)]="newChatMessage" 
+            (keyup.enter)="sendChatMessage()"
+            placeholder="Ask a question or post a doubt..." 
+            class="flex-1 text-sm p-inputtext-sm" />
+          
+          <button 
+            class="modern-btn modern-btn-primary px-3" 
+            (click)="sendChatMessage()"
+            [disabled]="!newChatMessage || !newChatMessage.trim()">
+            <i class="pi pi-send"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Syllabus & Handouts Card -->
+      <div class="handouts-card modern-card p-3">
+        <h4 class="m-0 font-bold text-sm text-800 mb-2 flex align-items-center gap-2">
+          <i class="pi pi-file-pdf text-red-500"></i>
+          Lecture Outline & Handouts
+        </h4>
+        <ul class="list-none p-0 m-0 text-xs text-600 flex flex-column gap-2">
+          <li class="flex align-items-center gap-2">
+            <i class="pi pi-check-circle text-green-500"></i>
+            <span>Module 9: Graph Theory & Traversals (BFS / DFS)</span>
+          </li>
+          <li class="flex align-items-center gap-2">
+            <i class="pi pi-check-circle text-green-500"></i>
+            <span>Single-Source Shortest Paths & Priority Queues</span>
+          </li>
+          <li class="flex align-items-center gap-2">
+            <i class="pi pi-circle text-400"></i>
+            <span>Aptitude Practice: Topological Sort & DAGs</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-6">
+    <i class="pi pi-spin pi-spinner text-3xl text-primary mb-2"></i>
+    <p class="text-500">Connecting to classroom live broadcast...</p>
+  </div>
+
+  <!-- Empty State if no live classes -->
+  <div *ngIf="!loading && liveClasses.length === 0" class="modern-card p-6 text-center">
+    <i class="pi pi-video text-5xl text-400 mb-3"></i>
+    <h3 class="text-900 font-bold">No Live Classes Currently Broadcasting</h3>
+    <p class="text-500 max-w-md mx-auto mb-4">
+      Faculty members have not scheduled an active live class feed at this moment. Please check back during scheduled lecture hours.
+    </p>
+    <button class="modern-btn modern-btn-primary" (click)="goToGrades()">
+      <i class="pi pi-chart-bar mr-1"></i>
+      View Past Grades & Solution Keys
+    </button>
+  </div>
+
+</div>

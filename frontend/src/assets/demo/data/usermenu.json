@@ -1,0 +1,32 @@
+[
+    {
+        "label": "Classroom Wing",
+        "items": [
+            {
+                "label": "Student Classroom",
+                "icon": "pi pi-fw pi-home",
+                "routerLink": "/user/dashboard"
+            },
+            {
+                "label": "Live Classrooms & Lectures",
+                "icon": "pi pi-fw pi-video",
+                "routerLink": "/user/live-class"
+            }
+        ]
+    },
+    {
+        "label": "Assessments & Performance",
+        "items": [
+            {
+                "label": "Aptitude Tests & Exams",
+                "icon": "pi pi-fw pi-pencil",
+                "routerLink": "/user/index"
+            },
+            {
+                "label": "Solutions & Analytics",
+                "icon": "pi pi-fw pi-chart-line",
+                "routerLink": "/user/grades"
+            }
+        ]
+    }
+]

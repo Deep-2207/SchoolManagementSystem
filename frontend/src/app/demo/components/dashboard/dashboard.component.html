@@ -1,0 +1,121 @@
+<div class="modern-container fade-in">
+  
+  <!-- School Classroom Academy Header Banner -->
+  <div class="school-blackboard-banner mb-4 slide-up">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <div class="flex align-items-center gap-2 mb-1">
+          <span class="banner-badge">
+            <i class="pi pi-shield"></i>
+            St. Jude Academy • Faculty & Administration Portal
+          </span>
+          <span class="banner-badge" style="color: #a7f3d0; border-color: rgba(167, 243, 208, 0.35);">
+            ● System Operational
+          </span>
+        </div>
+        <h1 class="banner-title">Academy Control Center & Metrics</h1>
+        <p class="banner-subtitle">Manage curriculum courses, aptitude question banks, examinations, and faculty accounts</p>
+      </div>
+
+      <div>
+        <button class="modern-btn modern-btn-primary" routerLink="/course/index" style="background: #ffffff; color: #0d2f24; border: none; font-weight: 700;">
+          <i class="pi pi-book mr-2"></i>
+          Curriculum & Exams
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Metric Line Cards -->
+  <div class="modern-section">
+    <div class="stats-grid">
+      <div class="stat-metric-card modern-card interactive-card">
+        <div class="stat-top">
+          <span class="metric-title">Departments</span>
+          <i class="pi pi-building metric-icon"></i>
+        </div>
+        <div class="metric-number font-mono">{{ loading ? '...' : departmentCount }}</div>
+        <span class="metric-foot">Academic divisions</span>
+      </div>
+
+      <div class="stat-metric-card modern-card interactive-card">
+        <div class="stat-top">
+          <span class="metric-title">Active Courses</span>
+          <i class="pi pi-book metric-icon"></i>
+        </div>
+        <div class="metric-number font-mono">{{ loading ? '...' : courseCount }}</div>
+        <span class="metric-foot">Curriculum modules</span>
+      </div>
+
+      <div class="stat-metric-card modern-card interactive-card">
+        <div class="stat-top">
+          <span class="metric-title">Enrolled Students</span>
+          <i class="pi pi-users metric-icon"></i>
+        </div>
+        <div class="metric-number font-mono">{{ loading ? '...' : studentCount }}</div>
+        <span class="metric-foot">Verified accounts</span>
+      </div>
+
+      <div class="stat-metric-card modern-card interactive-card">
+        <div class="stat-top">
+          <span class="metric-title">Live Exams</span>
+          <i class="pi pi-file-edit metric-icon text-emerald-600"></i>
+        </div>
+        <div class="metric-number font-mono text-emerald-600 flex items-center gap-2">
+          <span>{{ loading ? '...' : activeExamCount }}</span>
+        </div>
+        <span class="metric-foot">SignalR Hub ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Management Actions -->
+  <div class="modern-section">
+    <div class="section-title-row">
+      <h2 class="section-label">Management Shortcuts</h2>
+      <span class="section-subtext">Direct navigation tools</span>
+    </div>
+    
+    <div class="actions-grid">
+      <div class="action-card modern-card interactive-card" routerLink="/department/index">
+        <div class="action-top">
+          <div class="action-icon-pill">
+            <i class="pi pi-building"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">Departments</h3>
+          <p class="action-desc">Manage academic faculties and faculties structure</p>
+        </div>
+      </div>
+
+      <div class="action-card modern-card interactive-card" routerLink="/course/index">
+        <div class="action-top">
+          <div class="action-icon-pill">
+            <i class="pi pi-book"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">Courses & Exams</h3>
+          <p class="action-desc">Schedules, instructor assignment, and MCQ question authoring</p>
+        </div>
+      </div>
+
+      <div class="action-card modern-card interactive-card" routerLink="/student/index">
+        <div class="action-top">
+          <div class="action-icon-pill">
+            <i class="pi pi-users"></i>
+          </div>
+          <i class="pi pi-arrow-up-right action-arrow"></i>
+        </div>
+        <div class="action-meta">
+          <h3 class="action-title">Student Records</h3>
+          <p class="action-desc">View roster, student numbers, and enrollment records</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

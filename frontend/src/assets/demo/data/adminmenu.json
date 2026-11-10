@@ -1,0 +1,37 @@
+[
+    {
+        "label": "Institution Administration",
+        "items": [
+            {
+                "label": "Admin Dashboard",
+                "icon": "pi pi-fw pi-shield",
+                "routerLink": "/"
+            }
+        ]
+    },
+    {
+        "label": "Faculty & Operations",
+        "items": [
+            {
+                "label": "Teacher Management",
+                "icon": "pi pi-fw pi-user-plus",
+                "routerLink": "/teacher/index"
+            },
+            {
+                "label": "Academic Departments",
+                "icon": "pi pi-fw pi-building",
+                "routerLink": "/department/index"
+            },
+            {
+                "label": "Curriculum & Courses",
+                "icon": "pi pi-fw pi-book",
+                "routerLink": "/course/index"
+            },
+            {
+                "label": "Student Directory",
+                "icon": "pi pi-fw pi-users",
+                "routerLink": "/student/index"
+            }
+        ]
+    }
+]

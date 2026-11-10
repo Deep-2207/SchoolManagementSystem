@@ -1,0 +1,162 @@
+/* ========================================================================= */
+/* MINIMALIST & AESTHETIC TEACHER DASHBOARD STYLES                           */
+/* ========================================================================= */
+
+.academic-term-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+
+  .dot-separator {
+    color: var(--border-hover);
+  }
+}
+
+/* Metric Cards Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+
+  .stat-metric-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+
+      .metric-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+      }
+
+      .metric-icon {
+        font-size: 1rem;
+        color: var(--text-secondary);
+      }
+    }
+
+    .metric-number {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+    }
+
+    .metric-foot {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.section-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+
+  .section-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .section-subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+}
+
+/* Actions Grid */
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .action-card {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
+    border-radius: var(--radius-xl);
+
+    .action-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+
+      .action-icon-pill {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--radius-md);
+        background: var(--bg-surface-subtle);
+        border: 1px solid var(--border-hairline);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+      }
+
+      .action-arrow {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        transition: transform 0.2s ease;
+      }
+    }
+
+    &:hover {
+      .action-top .action-icon-pill {
+        background: var(--brand-primary);
+        color: var(--text-inverse);
+        border-color: var(--brand-primary);
+      }
+      .action-top .action-arrow {
+        transform: translate(2px, -2px);
+        color: var(--text-primary);
+      }
+    }
+
+    .action-meta {
+      .action-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+      }
+      .action-desc {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+  }
+}

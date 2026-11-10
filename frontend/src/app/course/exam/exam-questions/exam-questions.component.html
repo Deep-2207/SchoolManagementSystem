@@ -1,0 +1,335 @@
+<div class="modern-container fade-in">
+  <p-toast></p-toast>
+
+  <!-- School Classroom Academy Header -->
+  <div class="school-blackboard-banner mb-4 slide-up">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+      <div>
+        <span class="banner-badge">
+          <i class="pi pi-book"></i>
+          Assessment Hall • Question Repository
+        </span>
+        <h1 class="banner-title">Aptitude Question Bank & Solution Keys</h1>
+        <p class="banner-subtitle">Configure questions across Quantitative, Logical Reasoning, and Verbal sections with step-by-step solutions</p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="modern-btn" (click)="downloadSampleTemplate()" style="background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.3); font-weight: 600;">
+          <i class="pi pi-download mr-1"></i>
+          Sample CSV
+        </button>
+        <button class="modern-btn" (click)="openBulkUpload()" style="background: #f59e0b; color: #1e293b; border: none; font-weight: 700;">
+          <i class="pi pi-cloud-upload mr-1"></i>
+          Bulk Upload Questions
+        </button>
+        <button class="modern-btn modern-btn-primary" (click)="openNew()" style="background: #ffffff; color: #0d2f24; border: none; font-weight: 700;">
+          <i class="pi pi-plus mr-1"></i>
+          Add Question
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col-12">
+      <div class="modern-card p-4">
+        <p-table #dt [value]="questions" responsiveLayout="scroll" [rows]="10"
+          [globalFilterFields]="['question','explanation']" [paginator]="true"
+          [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} items"
+          [(selection)]="selectedQuestions" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3 pb-3">
+              <h4 class="m-0 font-bold text-800">Exam Questions ({{ questions.length }})</h4>
+              <span class="block p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search question text..." class="w-full sm:w-auto" />
+              </span>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th>Section</th>
+              <th>Difficulty</th>
+              <th style="min-width: 25rem">Question Problem Statement</th>
+              <th>Key</th>
+              <th style="width: 8rem">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-q>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="q"></p-tableCheckbox>
+              </td>
+              <td>
+                <span class="section-pill {{ getSectionClass(q.section) }}">
+                  {{ getSectionLabel(q.section) }}
+                </span>
+              </td>
+              <td>
+                <span class="diff-badge {{ getDifficultyClass(q.difficulty) }}">
+                  {{ getDifficultyLabel(q.difficulty) }}
+                </span>
+              </td>
+              <td>
+                <div class="font-semibold text-900 mb-1">{{ q.question }}</div>
+                <div class="flex gap-2 text-xs text-500 flex-wrap">
+                  <span><strong>A:</strong> {{ q.choiceA }}</span>
+                  <span><strong>B:</strong> {{ q.choiceB }}</span>
+                  <span><strong>C:</strong> {{ q.choiceC }}</span>
+                  <span><strong>D:</strong> {{ q.choiceD }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="palette-swatch palette-swatch-answered font-bold">
+                  {{ getTrueChoiceLetter(q.trueChoice) }}
+                </span>
+              </td>
+              <td>
+                <div class="flex gap-2">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-sm" (click)="editQuestion(q)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning p-button-sm" (click)="deleteQuestion(q)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- BULK QUESTION UPLOAD DIALOG                                               -->
+  <!-- ========================================================================= -->
+  <p-dialog [(visible)]="bulkUploadDialog" [style]="{width: '780px'}" header="Bulk Question Upload & Import" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+      
+      <!-- Top Instructions Card -->
+      <div class="surface-ground p-3 border-round-lg mb-3 border-1 surface-border flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+          <span class="font-bold text-sm text-900 block">Fast CSV / Excel / JSON Upload</span>
+          <span class="text-xs text-600">Import dozens of aptitude questions with choices, keys, and mathematical explanations in seconds.</span>
+        </div>
+        <button class="modern-btn modern-btn-secondary text-xs" (click)="downloadSampleTemplate()">
+          <i class="pi pi-download mr-1"></i> Download Sample CSV
+        </button>
+      </div>
+
+      <!-- Mode Selector Tabs -->
+      <div class="flex gap-2 mb-3">
+        <button 
+          class="modern-btn flex-1 p-2 text-sm font-semibold"
+          [ngClass]="bulkUploadMode === 'file' ? 'modern-btn-primary' : 'modern-btn-secondary'"
+          (click)="bulkUploadMode = 'file'">
+          <i class="pi pi-file mr-1"></i> Upload CSV / JSON File
+        </button>
+        <button 
+          class="modern-btn flex-1 p-2 text-sm font-semibold"
+          [ngClass]="bulkUploadMode === 'paste' ? 'modern-btn-primary' : 'modern-btn-secondary'"
+          (click)="bulkUploadMode = 'paste'">
+          <i class="pi pi-align-left mr-1"></i> Paste Text / CSV / JSON
+        </button>
+      </div>
+
+      <!-- Mode 1: File Upload -->
+      <div *ngIf="bulkUploadMode === 'file'" class="mb-3">
+        <div class="p-4 border-2 border-dashed surface-border border-round-xl text-center bg-surface hover:surface-50 transition-colors">
+          <i class="pi pi-cloud-upload text-4xl text-primary mb-2"></i>
+          <h4 class="m-0 font-bold text-800 text-sm mb-1">Select CSV or JSON file from your computer</h4>
+          <p class="text-xs text-500 mb-3">Supported formats: .csv, .txt, .json</p>
+          <input 
+            type="file" 
+            accept=".csv, .json, .txt" 
+            (change)="onFileSelected($event)" 
+            class="text-xs cursor-pointer" />
+        </div>
+      </div>
+
+      <!-- Mode 2: Paste Content -->
+      <div *ngIf="bulkUploadMode === 'paste'" class="mb-3">
+        <label class="text-xs font-bold text-700 block mb-1">Paste CSV or JSON Rows Here:</label>
+        <textarea 
+          pInputTextarea 
+          [(ngModel)]="pastedContent" 
+          rows="6" 
+          placeholder="Paste comma-separated rows or JSON array here...&#10;e.g.&#10;What is 10% of 50?,5,10,15,20,,A,Quant,Easy,10% of 50 is 5." 
+          class="w-full text-xs font-mono"></textarea>
+        <button class="modern-btn modern-btn-primary mt-2 text-xs w-full" (click)="parsePastedData()">
+          <i class="pi pi-bolt mr-1"></i> Parse Pasted Questions
+        </button>
+      </div>
+
+      <!-- Error alert if any -->
+      <div *ngIf="parseErrorMessage" class="p-2 border-round-md bg-red-50 border-1 border-red-200 text-xs text-red-900 mb-3">
+        <i class="pi pi-exclamation-triangle mr-1"></i> {{ parseErrorMessage }}
+      </div>
+
+      <!-- Preview of Parsed Questions -->
+      <div *ngIf="parsedQuestions.length > 0" class="surface-ground p-3 border-round-lg border-1 surface-border">
+        <div class="flex justify-content-between align-items-center mb-2">
+          <span class="font-bold text-sm text-green-700 flex align-items-center gap-1">
+            <i class="pi pi-check-circle"></i>
+            Parsed {{ parsedQuestions.length }} Valid Question(s)
+          </span>
+          <span class="text-xs text-500">Review before importing</span>
+        </div>
+
+        <div class="max-h-16rem overflow-y-auto flex flex-column gap-2 pr-1">
+          <div *ngFor="let pq of parsedQuestions; let idx = index" class="p-2 bg-white border-round-md border-1 surface-border flex align-items-center justify-content-between text-xs">
+            <div class="flex-1 pr-2">
+              <div class="flex align-items-center gap-2 mb-1">
+                <span class="font-bold text-900">#{{ idx + 1 }}</span>
+                <span class="section-pill {{ getSectionClass(pq.section) }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">
+                  {{ getSectionLabel(pq.section) }}
+                </span>
+                <span class="diff-badge {{ getDifficultyClass(pq.difficulty) }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">
+                  {{ getDifficultyLabel(pq.difficulty) }}
+                </span>
+                <span class="font-bold text-primary">Key: {{ getTrueChoiceLetter(pq.trueChoice) }}</span>
+              </div>
+              <div class="text-800 font-medium line-clamp-1">{{ pq.question }}</div>
+              <div class="text-500 font-mono mt-1" style="font-size: 0.65rem;">
+                A: {{ pq.choiceA }} | B: {{ pq.choiceB }} | C: {{ pq.choiceC }} | D: {{ pq.choiceD }}
+              </div>
+            </div>
+            <button class="action-btn delete-btn p-1" (click)="removeParsedQuestion(idx)" title="Remove question">
+              <i class="pi pi-times text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="bulkUploadDialog = false"></button>
+      <button 
+        pButton 
+        pRipple 
+        [label]="isImporting ? 'Importing...' : 'Confirm & Import ' + parsedQuestions.length + ' Questions'" 
+        icon="pi pi-check" 
+        class="p-button-success" 
+        [disabled]="parsedQuestions.length === 0 || isImporting"
+        (click)="confirmBulkImport()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Question Dialog -->
+  <p-dialog [(visible)]="questionDialog" [style]="{width: '680px'}" header="Aptitude Question Editor" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="grid mb-2">
+        <div class="col-6">
+          <label class="font-bold text-sm block mb-1">Aptitude Test Section</label>
+          <select [(ngModel)]="question.section" class="p-inputtext w-full">
+            <option *ngFor="let sec of sections" [value]="sec.value">{{ sec.label }}</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="font-bold text-sm block mb-1">Difficulty & Marking</label>
+          <select [(ngModel)]="question.difficulty" class="p-inputtext w-full">
+            <option *ngFor="let d of difficulties" [value]="d.value">{{ d.label }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field mb-3">
+        <label for="question" class="font-bold text-sm block mb-1">Question / Problem Statement</label>
+        <textarea 
+          pInputTextarea 
+          id="question" 
+          [(ngModel)]="question.question" 
+          rows="3" 
+          placeholder="State the mathematical problem or logic stem..." 
+          class="w-full"
+          required></textarea>
+        <small class="p-error block" *ngIf="submitted && !question.question">Question stem is required.</small>
+      </div>
+
+      <!-- Choices A through E -->
+      <div class="surface-ground p-3 border-round-lg mb-3 border-1 surface-border">
+        <span class="font-bold text-sm text-800 block mb-2">Answer Choices (A - E)</span>
+        
+        <div class="grid mb-2">
+          <div class="col-6">
+            <span class="p-input-icon-left w-full">
+              <i class="font-bold text-xs" style="left: 0.75rem; color: #64748b;">A</i>
+              <input type="text" pInputText [(ngModel)]="question.choiceA" placeholder="Choice A" class="w-full pl-5" />
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="p-input-icon-left w-full">
+              <i class="font-bold text-xs" style="left: 0.75rem; color: #64748b;">B</i>
+              <input type="text" pInputText [(ngModel)]="question.choiceB" placeholder="Choice B" class="w-full pl-5" />
+            </span>
+          </div>
+        </div>
+
+        <div class="grid mb-2">
+          <div class="col-6">
+            <span class="p-input-icon-left w-full">
+              <i class="font-bold text-xs" style="left: 0.75rem; color: #64748b;">C</i>
+              <input type="text" pInputText [(ngModel)]="question.choiceC" placeholder="Choice C" class="w-full pl-5" />
+            </span>
+          </div>
+          <div class="col-6">
+            <span class="p-input-icon-left w-full">
+              <i class="font-bold text-xs" style="left: 0.75rem; color: #64748b;">D</i>
+              <input type="text" pInputText [(ngModel)]="question.choiceD" placeholder="Choice D" class="w-full pl-5" />
+            </span>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-6">
+            <span class="p-input-icon-left w-full">
+              <i class="font-bold text-xs" style="left: 0.75rem; color: #64748b;">E</i>
+              <input type="text" pInputText [(ngModel)]="question.choiceE" placeholder="Choice E (Optional)" class="w-full pl-5" />
+            </span>
+          </div>
+          <div class="col-6">
+            <select [(ngModel)]="question.trueChoice" class="p-inputtext w-full font-bold">
+              <option *ngFor="let c of choices" [value]="c.value">Correct Key: {{ c.label }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Solution / Explanation -->
+      <div class="field mb-2">
+        <label for="explanation" class="font-bold text-sm block mb-1">
+          <i class="pi pi-lightbulb mr-1 text-yellow-600"></i> Step-by-Step Solution & Mathematical Explanation
+        </label>
+        <textarea 
+          pInputTextarea 
+          id="explanation" 
+          [(ngModel)]="question.explanation" 
+          rows="4" 
+          placeholder="Step 1: Write formula...\nStep 2: Substitute values...\nStep 3: Conclude final answer." 
+          class="w-full text-sm font-mono"></textarea>
+        <small class="text-500 block">This solution guide is presented to candidates on the post-exam Performance Review screen.</small>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+      <button pButton pRipple label="Save Question" icon="pi pi-check" class="p-button-primary" (click)="saveQuestion()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Confirm Delete -->
+  <p-dialog [(visible)]="deleteQuestionDialog" header="Confirm Deletion" [modal]="true" [style]="{width:'400px'}">
+    <div class="flex align-items-center gap-3">
+      <i class="pi pi-exclamation-triangle text-3xl text-yellow-500"></i>
+      <span *ngIf="question">Delete this question from the examination bank?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteQuestionDialog = false"></button>
+      <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Delete" (click)="confirmDelete()"></button>
+    </ng-template>
+  </p-dialog>
+</div>
