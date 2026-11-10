@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using SchoolManagement.Models;
 using SchoolManagement.Services.Interfaces;
 using SchoolManagement.UnitOfWork;

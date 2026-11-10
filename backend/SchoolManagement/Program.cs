@@ -5,6 +5,9 @@ using SchoolManagement.Services.Impls;
 using SchoolManagement.Services.Interfaces;
 using SchoolManagement.UnitOfWork;
 
+// Enable legacy timestamp behavior for Npgsql to seamlessly handle DateTime without UTC strictness issues
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -30,7 +33,7 @@ builder.Services.AddCors(options => options.AddPolicy(ApiCorsPolicy, builder =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SchoolContext>(option =>
-    option.UseSqlServer(connectionString));
+    option.UseNpgsql(connectionString));
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -66,5 +69,11 @@ app.UseAuthorization();
 app.MapHub<SchoolHub>("school-hub");
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SchoolContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 app.Run();

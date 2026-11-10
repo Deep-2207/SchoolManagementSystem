@@ -55,6 +55,8 @@ export class ExamComponent implements OnInit {
   }
 
   openNew() {
+    const now = new Date();
+    const end = new Date(Date.now() + 7 * 24 * 3600 * 1000);
     this.exam = { 
       courseId: this.courseId, 
       durationMinutes: 45,
@@ -62,7 +64,9 @@ export class ExamComponent implements OnInit {
       hasLiveVideo: true,
       videoIframeUrl: 'https://www.youtube.com/embed/jfKfPfyJRdk',
       videoInstructions: 'Academy proctored session is live. Keep workspace well lit.',
-      enableNegativeMarking: true
+      enableNegativeMarking: true,
+      examDateStart: now.toISOString().slice(0, 16),
+      examDateEnd: end.toISOString().slice(0, 16)
     };
     this.submitted = false;
     this.examDialog = true;

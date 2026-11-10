@@ -1,7 +1,7 @@
 {
-    "name": "sakai-ng",
+    "name": "lucifer-academy",
     "version": "17.0.0",
-    "license": "PrimeNG Commercial",
+    "license": "Lucifer Academic",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",

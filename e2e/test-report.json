@@ -1,0 +1,85 @@
+{
+  "successes": [
+    {
+      "step": "Branding",
+      "description": "Page title verified: 'Lucifer - Academic & Examination Portal'",
+      "timestamp": "2026-11-10T12:01:48.825Z"
+    },
+    {
+      "step": "Branding",
+      "description": "Login header verified: 'Lucifer Academy'",
+      "timestamp": "2026-11-10T12:01:48.858Z"
+    },
+    {
+      "step": "Quick Fill",
+      "description": "Admin credentials autofilled.",
+      "timestamp": "2026-11-10T12:01:49.365Z"
+    },
+    {
+      "step": "Branding",
+      "description": "Topbar clean of PrimeNG references.",
+      "timestamp": "2026-11-10T12:01:51.222Z"
+    },
+    {
+      "step": "Teacher Management",
+      "description": "Faculty page loaded successfully.",
+      "timestamp": "2026-11-10T12:01:52.435Z"
+    },
+    {
+      "step": "Teacher Management",
+      "description": "New faculty account 'prof_lucifer_1794312112993@school.edu' successfully created and rendered.",
+      "timestamp": "2026-11-10T12:01:54.696Z"
+    },
+    {
+      "step": "Exam Management",
+      "description": "Successfully created Exam 'Lucifer Aptitude Challenge 9933' with Negative Marking.",
+      "timestamp": "2026-11-10T12:02:13.593Z"
+    },
+    {
+      "step": "Bulk Upload",
+      "description": "CSV successfully parsed 2 questions into preview table.",
+      "timestamp": "2026-11-10T12:02:26.355Z"
+    },
+    {
+      "step": "Bulk Upload",
+      "description": "Confirmed bulk import of 2 questions.",
+      "timestamp": "2026-11-10T12:02:28.407Z"
+    },
+    {
+      "step": "Student Dashboard",
+      "description": "Lucifer Academy student banner verified.",
+      "timestamp": "2026-11-10T12:02:31.483Z"
+    },
+    {
+      "step": "Student Dashboard",
+      "description": "Live Classroom Wing active broadcast widget displayed.",
+      "timestamp": "2026-11-10T12:02:31.489Z"
+    },
+    {
+      "step": "Live Classroom",
+      "description": "16:9 Embedded video player rendered (1 iframe found).",
+      "timestamp": "2026-11-10T12:02:32.902Z"
+    },
+    {
+      "step": "Student Exam List",
+      "description": "\"Enter Live Exam\" button visible and clicked.",
+      "timestamp": "2026-11-10T12:02:35.539Z"
+    },
+    {
+      "step": "Exam Hall",
+      "description": "Real-time candidate answer autosave triggered: ' 💾 Autosaved: 05:32:38 PM '",
+      "timestamp": "2026-11-10T12:02:39.022Z"
+    },
+    {
+      "step": "Exam Hall",
+      "description": "Candidate flagged question for review and proceeded to next.",
+      "timestamp": "2026-11-10T12:02:39.851Z"
+    },
+    {
+      "step": "Solutions & Analytics",
+      "description": "Solutions Review & Analytics already open via active submission.",
+      "timestamp": "2026-11-10T12:02:47.538Z"
+    }
+  ],
+  "issues": []
+}

@@ -32,6 +32,10 @@ namespace SchoolManagement.Services.Impls
             try
             {
                 var exam = Mapper.Map<Exam>(examDto);
+                var start = exam.ExamDateStart == default || exam.ExamDateStart.Year < 2000 ? DateTime.UtcNow : exam.ExamDateStart;
+                var end = exam.ExamDateEnd == default || exam.ExamDateEnd.Year < 2000 || exam.ExamDateEnd <= start ? start.AddDays(7) : exam.ExamDateEnd;
+                exam.ExamDateStart = DateTime.SpecifyKind(start, DateTimeKind.Utc);
+                exam.ExamDateEnd = DateTime.SpecifyKind(end, DateTimeKind.Utc);
                 await _unitOfWork.Exam.Insert(exam);
                 return exam.Id;
             }
@@ -54,6 +58,8 @@ namespace SchoolManagement.Services.Impls
             {
                 var entity = await _unitOfWork.Exam.FindById(examDto.Id);
                 var exam = Mapper.Map(examDto, entity);
+                if (exam.ExamDateStart != default) exam.ExamDateStart = DateTime.SpecifyKind(exam.ExamDateStart, DateTimeKind.Utc);
+                if (exam.ExamDateEnd != default) exam.ExamDateEnd = DateTime.SpecifyKind(exam.ExamDateEnd, DateTimeKind.Utc);
                 int result = await _unitOfWork.Exam.Update(exam);
                 return result > 0;
             }
